@@ -1,8 +1,8 @@
 package exter.eveindustry.test.data.planet;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.ZipFile;
 
 import exter.eveindustry.test.data.cache.Cache;
 import exter.tsl.InvalidTSLException;
@@ -19,36 +19,24 @@ public class PlanetBuildingDA
     @Override
     public PlanetBuilding onCacheMiss(Integer pid)
     {
-      ZipFile zip;
       try
       {
-        zip = new ZipFile("test_eid.zip");
-        try
+        InputStream raw = new FileInputStream("planet/" + String.valueOf(pid) + ".tsl");
+        TSLReader reader = new TSLReader(raw);
+        reader.moveNext();
+        if(reader.getState() == TSLReader.State.OBJECT && reader.getName().equals("planetbuilding"))
         {
-          InputStream raw = zip.getInputStream(zip.getEntry("planet/" + String.valueOf(pid) + ".tsl"));
-          TSLReader reader = new TSLReader(raw);
-          reader.moveNext();
-          if(reader.getState() == TSLReader.State.OBJECT && reader.getName().equals("planetbuilding"))
-          {
-            raw.close();
-            zip.close();
-            return new PlanetBuilding(new TSLObject(reader));
-          } else
-          {
-            raw.close();
-            zip.close();
-            return null;
-          }
-        } catch(InvalidTSLException e)
+          raw.close();
+          return new PlanetBuilding(new TSLObject(reader));
+        } else
         {
-          zip.close();
-          return null;
-        } catch(IOException e)
-        {
-          zip.close();
+          raw.close();
           return null;
         }
-      } catch(IOException e1)
+      } catch(InvalidTSLException e)
+      {
+        return null;
+      } catch(IOException e)
       {
         return null;
       }

@@ -1,10 +1,10 @@
 package exter.eveindustry.test.data.decryptor;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipFile;
 
 import exter.tsl.InvalidTSLException;
 import exter.tsl.TSLObject;
@@ -16,46 +16,37 @@ public class DecryptorDA
 
   static
   {
-    ZipFile zip;
+    TSLReader tsl = null;
+    InputStream raw = null;
     try
     {
-      zip = new ZipFile("test_eid.zip");
-      TSLReader tsl = null;
-      InputStream raw = null;
-      try
-      {
-        raw = zip.getInputStream(zip.getEntry("blueprint/decryptors.tsl"));
-        tsl = new TSLReader(raw);
+      raw = new FileInputStream("blueprint/decryptors.tsl");
+      tsl = new TSLReader(raw);
 
+      tsl.moveNext();
+
+      while(true)
+      {
         tsl.moveNext();
-
-        while(true)
+        TSLReader.State type = tsl.getState();
+        if(type == TSLReader.State.ENDOBJECT)
         {
-          tsl.moveNext();
-          TSLReader.State type = tsl.getState();
-          if(type == TSLReader.State.ENDOBJECT)
-          {
-            break;
-          }
-
-          if(type == TSLReader.State.OBJECT)
-          {
-            Decryptor d = new Decryptor(new TSLObject(tsl));
-            decryptors.put(d.getID(), d);
-          }
+          break;
         }
-        raw.close();
-      } catch(InvalidTSLException e)
-      {
-        throw new RuntimeException(e);
-      } catch(IOException e)
-      {
-        throw new RuntimeException(e);
+
+        if(type == TSLReader.State.OBJECT)
+        {
+          Decryptor d = new Decryptor(new TSLObject(tsl));
+          decryptors.put(d.getID(), d);
+        }
       }
-      zip.close();
-    } catch(IOException e1)
+      raw.close();
+    } catch(InvalidTSLException e)
     {
-      throw new RuntimeException(e1);
+      throw new RuntimeException(e);
+    } catch(IOException e)
+    {
+      throw new RuntimeException(e);
     }
   }
 }

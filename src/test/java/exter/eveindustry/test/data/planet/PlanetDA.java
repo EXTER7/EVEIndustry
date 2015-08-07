@@ -1,10 +1,10 @@
 package exter.eveindustry.test.data.planet;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipFile;
 
 import exter.tsl.InvalidTSLException;
 import exter.tsl.TSLObject;
@@ -17,13 +17,9 @@ public class PlanetDA
 
   static
   {
-    ZipFile zip;
-    try
-    {
-      zip = new ZipFile("test_eid.zip");
       try
       {
-        InputStream raw = zip.getInputStream(zip.getEntry("planet/planets.tsl"));
+        InputStream raw = new FileInputStream("planet/planets.tsl");
 
         TSLReader tsl = new TSLReader(raw);
         tsl.moveNext();
@@ -46,17 +42,10 @@ public class PlanetDA
         raw.close();
       } catch(InvalidTSLException e)
       {
-        zip.close();
         throw new RuntimeException(e);
       } catch(IOException e)
       {
-        zip.close();
         throw new RuntimeException(e);
       }
-      zip.close();
-    } catch(IOException e1)
-    {
-      throw new RuntimeException(e1);
-    }
   }
 }

@@ -1,10 +1,10 @@
 package exter.eveindustry.test.data.starbase;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipFile;
 
 import exter.tsl.InvalidTSLException;
 import exter.tsl.TSLObject;
@@ -17,46 +17,35 @@ public class StarbaseTowerDA
 
   static
   {
-    ZipFile zip;
     try
     {
-      zip = new ZipFile("test_eid.zip");
-      try
-      {
-        InputStream raw = zip.getInputStream(zip.getEntry("starbases.tsl"));
-        TSLReader tsl = new TSLReader(raw);
+      InputStream raw = new FileInputStream("starbases.tsl");
+      TSLReader tsl = new TSLReader(raw);
 
+      tsl.moveNext();
+
+      while(true)
+      {
         tsl.moveNext();
-
-        while(true)
+        TSLReader.State type = tsl.getState();
+        if(type == TSLReader.State.ENDOBJECT)
         {
-          tsl.moveNext();
-          TSLReader.State type = tsl.getState();
-          if(type == TSLReader.State.ENDOBJECT)
-          {
-            break;
-          }
-
-          if(type == TSLReader.State.OBJECT)
-          {
-            StarbaseTower t = new StarbaseTower(new TSLObject(tsl));
-            towers.put(t.TowerItem.ID, t);
-          }
+          break;
         }
-        raw.close();
-      } catch(InvalidTSLException e)
-      {
-        zip.close();
-        throw new RuntimeException(e);
-      } catch(IOException e)
-      {
-        zip.close();
-        throw new RuntimeException(e);
+
+        if(type == TSLReader.State.OBJECT)
+        {
+          StarbaseTower t = new StarbaseTower(new TSLObject(tsl));
+          towers.put(t.TowerItem.ID, t);
+        }
       }
-      zip.close();
-    } catch(IOException e1)
+      raw.close();
+    } catch(InvalidTSLException e)
     {
-      throw new RuntimeException(e1);
+      throw new RuntimeException(e);
+    } catch(IOException e)
+    {
+      throw new RuntimeException(e);
     }
   }
 }

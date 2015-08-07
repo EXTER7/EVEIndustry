@@ -1,5 +1,6 @@
 package exter.eveindustry.test.data.refine;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipFile;
@@ -18,36 +19,24 @@ public class RefinableDA
     @Override
     public Refinable onCacheMiss(Integer refine)
     {
-      ZipFile zip;
       try
       {
-        zip = new ZipFile("test_eid.zip");
-        try
+        InputStream raw = new FileInputStream("refine/" + String.valueOf(refine) + ".tsl");
+        TSLReader reader = new TSLReader(raw);
+        reader.moveNext();
+        if(reader.getState() == TSLReader.State.OBJECT && reader.getName().equals("refine"))
         {
-          InputStream raw = zip.getInputStream(zip.getEntry("refine/" + String.valueOf(refine) + ".tsl"));
-          TSLReader reader = new TSLReader(raw);
-          reader.moveNext();
-          if(reader.getState() == TSLReader.State.OBJECT && reader.getName().equals("refine"))
-          {
-            raw.close();
-            zip.close();
-            return new Refinable(new TSLObject(reader));
-          } else
-          {
-            raw.close();
-            zip.close();
-            return null;
-          }
-        } catch(InvalidTSLException e)
+          raw.close();
+          return new Refinable(new TSLObject(reader));
+        } else
         {
-          zip.close();
-          return null;
-        } catch(IOException e)
-        {
-          zip.close();
+          raw.close();
           return null;
         }
-      } catch(IOException e1)
+      } catch(InvalidTSLException e)
+      {
+        return null;
+      } catch(IOException e)
       {
         return null;
       }
