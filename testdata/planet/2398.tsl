@@ -1,0 +1,7 @@
+planetbuilding [
+  id "2398",
+  amount "40",
+  level "1",
+  tax "400",
+  in [ id "2267", amount "6000" ]
+]

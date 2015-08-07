@@ -1,0 +1,4 @@
+starmap [
+  s [ id "30000142", name "Jita", region "10000002" ],
+  s [ id "30002798", name "Venilen", region "10000033" ]
+]

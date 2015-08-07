@@ -1,0 +1,6 @@
+reaction [
+  id "16671",
+  in [ id "16654", amount "100" ],
+  in [ id "16658", amount "100" ],
+  out [ id "16671", amount "10000" ]
+]

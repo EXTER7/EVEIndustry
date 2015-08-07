@@ -1,0 +1,5 @@
+starbases [
+  _ [ id "16213", name "Caldari Large", fuel_id "4051", fuel_amount "40" ],
+  _ [ id "20061", name "Caldari Medium", fuel_id "4051", fuel_amount "20" ],
+  _ [ id "20062", name "Caldari Small", fuel_id "4051", fuel_amount "10" ]
+]

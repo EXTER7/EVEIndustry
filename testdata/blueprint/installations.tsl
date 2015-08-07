@@ -1,0 +1,7 @@
+installations [
+  group [ id "8105", group "83", installation "6", time "1.0", material "1.0", cost "1.0" ],
+  installation [ id "6", name "Station" ],
+  invention [ id "38", name "Station", time "1.0", cost "1.0", relics "0" ],
+  invention [ id "158", name "Experimental Lab", time "1.0", cost "1.0", relics "1" ]
+]
+

@@ -1,0 +1,7 @@
+blueprint [
+  id "178",
+  amount "100",
+  time "300",
+  material [ id "34", amount "27" ],
+  material [ id "35", amount "21" ]
+]

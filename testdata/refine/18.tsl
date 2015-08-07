@@ -1,0 +1,8 @@
+refine [
+  id "18",
+  batch "100",
+  sid "12191",
+  product [ id "34", amount "107" ],
+  product [ id "35", amount "213" ],
+  product [ id "36", amount "107" ]
+]

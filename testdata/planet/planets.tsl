@@ -1,0 +1,12 @@
+planets [
+  planet [
+    id "2015",
+    name "Lava",
+    advanced "0",
+    resource "2308",
+    resource "2267",
+    resource "2272",
+    resource "2306",
+    resource "2307"
+  ]
+]
