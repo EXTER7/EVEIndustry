@@ -23,13 +23,14 @@ public final class PlanetTask extends Task
   private float tax_percent;
   private List<IPlanetBuilding> buildings;
 
-  protected PlanetTask()
+  public PlanetTask()
   {
-    super();
+    this(getDataProvider().getDefaultPlanet());
   }
   
   public PlanetTask(IPlanet p)
   {
+    super();
     planet = p;
     buildings = new ArrayList<IPlanetBuilding>();
     tax_percent = 15;

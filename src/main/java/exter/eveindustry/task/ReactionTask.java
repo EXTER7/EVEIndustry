@@ -22,13 +22,14 @@ public final class ReactionTask extends Task
   private List<IReaction> reactions;
   private boolean sovereignty;
 
-  protected ReactionTask()
+  public ReactionTask()
   {
-    super();
+    this(getDataProvider().getDefaultStarbaseTower());
   }
   
   public ReactionTask(IStarbaseTower t)
   {
+    super();
     tower = t;
     reactions = new ArrayList<IReaction>();
     sovereignty = false;

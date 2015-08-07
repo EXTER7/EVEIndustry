@@ -19,21 +19,14 @@ public class DecryptorDA
     ZipFile zip;
     try
     {
-      zip = new ZipFile("test_eic.zip");
+      zip = new ZipFile("test_eid.zip");
       TSLReader tsl = null;
       InputStream raw = null;
       try
       {
         raw = zip.getInputStream(zip.getEntry("blueprint/decryptors.tsl"));
         tsl = new TSLReader(raw);
-      } catch(IOException e)
-      {
-        e.printStackTrace();
-        throw new AssertionError();
-      }
 
-      try
-      {
         tsl.moveNext();
 
         while(true)

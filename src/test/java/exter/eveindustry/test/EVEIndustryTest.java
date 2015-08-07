@@ -11,6 +11,8 @@ import org.junit.Test;
 import exter.eveindustry.item.ItemStack;
 import exter.eveindustry.task.ManufacturingTask;
 import exter.eveindustry.task.PlanetTask;
+import exter.eveindustry.task.ReactionTask;
+import exter.eveindustry.task.RefiningTask;
 import exter.eveindustry.task.Task;
 import exter.eveindustry.test.data.TestDataProvider;
 
@@ -35,6 +37,20 @@ public class EVEIndustryTest
   }
 
   @Test
+  public void testInstallationDA()
+  {
+    Assert.assertNotEquals(provider.getInstallationGroup(8105), null);
+    Assert.assertNotEquals(provider.getInventionInstallation(38), null);
+    Assert.assertNotEquals(provider.getInventionInstallation(158), null);
+  }
+
+  @Test
+  public void testDecryptorDA()
+  {
+    Assert.assertNotEquals(provider.getDecryptor(34201), null);
+  }
+
+  @Test
   public void testRefinableDA()
   {
     Assert.assertNotEquals(provider.getRefinable(18), null);
@@ -55,7 +71,13 @@ public class EVEIndustryTest
     Assert.assertNotEquals(provider.getPlanetBuilding(2400), null);
     Assert.assertNotEquals(provider.getPlanetBuilding(3828), null);
   }
-  
+
+  @Test
+  public void testPlanetDA()
+  {
+    Assert.assertNotEquals(provider.getPlanet(2015), null);
+  }
+
   @Test
   public void testManufacturingTask()
   {
@@ -97,6 +119,32 @@ public class EVEIndustryTest
     task.addBuilding(provider.getPlanetBuilding(2272));
     Assert.assertEquals(task.getProducedMaterials().size(),1);
     Assert.assertEquals(task.getRequiredMaterials().size(),0);
+  }
+
+  @Test
+  public void testReactionTask()
+  {
+    ReactionTask task = new ReactionTask(provider.getDefaultStarbaseTower());
+    Assert.assertEquals(task.getProducedMaterials().size(),0);
+    Assert.assertEquals(task.getRequiredMaterials().size(),1);
+    Assert.assertEquals(task.getRequiredMaterials().get(0).item.getID(),4051);
+    Assert.assertEquals(task.getRequiredMaterials().get(0).amount,960);
+    task.addReaction(provider.getReaction(16671));
+    Assert.assertEquals(task.getProducedMaterials().size(),1);
+    Assert.assertEquals(task.getRequiredMaterials().size(),3);
+  }
+
+  @Test
+  public void testRefiningTask()
+  {
+    RefiningTask task = new RefiningTask(provider.getRefinable(18));
+    Assert.assertEquals(task.getProducedMaterials().size(),3);
+    Assert.assertEquals(task.getRequiredMaterials().size(),1);
+    Assert.assertEquals(task.getRequiredMaterials().get(0).amount,100);
+    Map<Integer,ItemStack> materials = mapMaterials(task.getProducedMaterials());
+    Assert.assertEquals(materials.get(34).amount,51);
+    Assert.assertEquals(materials.get(35).amount,101);
+    Assert.assertEquals(materials.get(36).amount,51);
   }
 
   static

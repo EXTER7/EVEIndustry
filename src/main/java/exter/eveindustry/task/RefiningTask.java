@@ -166,7 +166,7 @@ public final class RefiningTask extends Task
   {
     double efficiency = getEfficiency();
     long batches = item_amount / refinable.getRequiredItem().amount;
-    return product.scaledRounded(Utils.clamp(batches * efficiency * (1 - tax_percent / 100),1.0,Double.MAX_VALUE)); 
+    return product.scaledRounded(Utils.clamp((double)batches * efficiency * (1 - tax_percent / 100),0.0,Double.MAX_VALUE)); 
   }
 
   
