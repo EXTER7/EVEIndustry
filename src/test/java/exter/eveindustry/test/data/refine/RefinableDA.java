@@ -3,7 +3,6 @@ package exter.eveindustry.test.data.refine;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.ZipFile;
 
 import exter.eveindustry.test.data.cache.Cache;
 import exter.tsl.InvalidTSLException;
