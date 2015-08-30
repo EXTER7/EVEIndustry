@@ -1,0 +1,3 @@
+[submodule "TSL"]
+	path = TSL
+	url = https://github.com/EXTER7/TSL.git
