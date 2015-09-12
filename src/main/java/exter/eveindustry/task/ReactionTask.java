@@ -22,11 +22,11 @@ public final class ReactionTask extends Task
   private List<IReaction> reactions;
   private boolean sovereignty;
 
-  public ReactionTask()
+  protected ReactionTask()
   {
-    this(getDataProvider().getDefaultStarbaseTower());
+    super();
   }
-  
+
   public ReactionTask(IStarbaseTower t)
   {
     super();
@@ -110,11 +110,17 @@ public final class ReactionTask extends Task
     updateMaterials();
   }
   
+  /**
+   * @return true, if the tower receives sovereignty bonus
+   */
   public boolean hasSovereignty()
   {
     return sovereignty;
   }
 
+  /**
+   * Set to true if the tower receives sovereignty bonus.
+   */
   public void setSovereignty(boolean value)
   {
     sovereignty = value;
@@ -149,7 +155,7 @@ public final class ReactionTask extends Task
   {
     
     IEVEDataProvider data = getDataProvider();
-    tower = data.getStarbaseTower(tsl.getStringAsInt("tower", data.getDefaultStarbaseTower().getID()));
+    tower = data.getStarbaseTower(tsl.getStringAsInt("tower", -1));
     if(tower == null)
     {
       throw new TaskLoadException();

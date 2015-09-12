@@ -2,7 +2,7 @@ package exter.eveindustry.task;
 
 /**
  * @author exter
- * Exception when a task contains an invalid attribute.
+ * Exception when a task contains an invalid parameter.
  */
 public final class TaskLoadException extends Exception
 {

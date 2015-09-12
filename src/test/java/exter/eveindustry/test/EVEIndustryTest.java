@@ -117,7 +117,7 @@ public class EVEIndustryTest
   @Test
   public void testPlanetTask()
   {
-    PlanetTask task = new PlanetTask();
+    PlanetTask task = new PlanetTask(provider.getPlanet(2015));
     Assert.assertEquals(0,task.getProducedMaterials().size());
     Assert.assertEquals(0,task.getRequiredMaterials().size());
     task.addBuilding(provider.getPlanetBuilding(3828));
@@ -140,7 +140,7 @@ public class EVEIndustryTest
   @Test
   public void testReactionTask()
   {
-    ReactionTask task = new ReactionTask();
+    ReactionTask task = new ReactionTask(provider.getStarbaseTower(16213));
     Assert.assertEquals(0,task.getProducedMaterials().size());
     Assert.assertEquals(1,task.getRequiredMaterials().size());
     Assert.assertEquals(4051,task.getRequiredMaterials().get(0).item.getID());
@@ -168,7 +168,7 @@ public class EVEIndustryTest
     Assert.assertEquals(53,materials.get(36).amount);
     task.setReprocessingSkillLevel(5);
     task.setReprocessingEfficiencySkillLevel(5);
-    task.setProcessingSkillLevel(5);
+    task.setOreProcessingSkillLevel(5);
     materials = mapMaterials(task.getProducedMaterials());
     Assert.assertEquals(74,materials.get(34).amount);
     Assert.assertEquals(148,materials.get(35).amount);

@@ -24,12 +24,12 @@ public final class PlanetTask extends Task
   private List<IPlanetBuilding> buildings;
 
   static private final int PARAMETER_BUILDINGS = 0;
-  
-  public PlanetTask()
+
+  protected PlanetTask()
   {
-    this(getDataProvider().getDefaultPlanet());
+    super();
   }
-  
+
   public PlanetTask(IPlanet p)
   {
     super();
@@ -116,7 +116,7 @@ public final class PlanetTask extends Task
     }
     if(removed)
     {
-      notifyParamaterChange(PARAMETER_BUILDINGS);
+      notifyParameterChange(PARAMETER_BUILDINGS);
     }
     updateMaterials();
   }
@@ -156,7 +156,7 @@ public final class PlanetTask extends Task
   protected void onLoadDataFromTSL(TSLObject tsl) throws TaskLoadException
   {
     IEVEDataProvider data = getDataProvider();
-    planet = data.getPlanet(tsl.getStringAsInt("planet", data.getDefaultPlanet().getID()));
+    planet = data.getPlanet(tsl.getStringAsInt("planet", -1));
     if(planet == null)
     {
       throw new TaskLoadException();

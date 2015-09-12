@@ -3,19 +3,16 @@ package exter.eveindustry.task;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import exter.eveindustry.data.IEVEDataProvider;
 import exter.eveindustry.data.blueprint.IBlueprint;
 import exter.eveindustry.data.blueprint.IInstallationGroup;
 import exter.eveindustry.data.blueprint.IInventionInstallation;
 import exter.eveindustry.data.decryptor.IDecryptor;
-import exter.eveindustry.data.inventory.IItem;
 import exter.eveindustry.data.systemcost.ISolarSystemIndustryCost;
 import exter.eveindustry.item.ItemStack;
 import exter.eveindustry.util.Utils;
@@ -27,7 +24,7 @@ import exter.tsl.TSLObject;
  */
 public final class ManufacturingTask extends Task
 {
-  // Solot 8 hardwiring
+  // Slot 8 hardwiring
   public enum Hardwiring
   {
     None(0,0.0),
@@ -62,7 +59,7 @@ public final class ManufacturingTask extends Task
   
   /**
    * @author exter
-   * Invention attributes for T2 blueprints.
+   * Invention attributes for T2/T3 blueprints.
    */
   public class Invention
   {
@@ -244,26 +241,9 @@ public final class ManufacturingTask extends Task
     }
   }
   
-  static private class SkillComparator implements Comparator<Integer>
-  {
-    @Override
-    public int compare(Integer lhs, Integer rhs)
-    {
-      IEVEDataProvider data = getDataProvider();
-      IItem l = data.getItem(lhs);
-      IItem r = data.getItem(rhs);
-      int cl = l.getGroupID();
-      int cr = r.getGroupID(); 
-      if(cl == cr)
-      {
-        return lhs.intValue() - rhs.intValue();
-      }
-      return cl - cr;
-    }
-  }
-
   static public final int PARAMETER_INVENTION_RUNS = 0;
   static public final int PARAMETER_INVENTION_ATTEMPTS = 1;
+  static public final int PARAMETER_SKILLS = 2;
   
   private Hardwiring hardwiring;
 
@@ -281,7 +261,6 @@ public final class ManufacturingTask extends Task
   private IBlueprint blueprint;
   
   private Map<Integer,Integer> skills;
-  private Set<Integer> skill_ids;
   
   protected ManufacturingTask()
   {
@@ -477,8 +456,8 @@ public final class ManufacturingTask extends Task
       int ir = Utils.clamp(getProductionTime() / invention.getInventionTime(),1,(int)Math.ceil(c / invention.getChance()));
       invention.setInventionRuns(ir);
       invention.setAttempts((int)Math.ceil(c / (invention.getChance() * ir)));
-      notifyParamaterChange(PARAMETER_INVENTION_RUNS);
-      notifyParamaterChange(PARAMETER_INVENTION_ATTEMPTS);
+      notifyParameterChange(PARAMETER_INVENTION_RUNS);
+      notifyParameterChange(PARAMETER_INVENTION_ATTEMPTS);
     } else
     {
       copies = c;
@@ -655,7 +634,7 @@ public final class ManufacturingTask extends Task
       if(copies <= 0)
       {
         copies = 1;
-      }
+      }      
       updateSkills();
       updateMaterials();
     }
@@ -663,7 +642,7 @@ public final class ManufacturingTask extends Task
   
   public Set<Integer> getSkills()
   {
-    return Collections.unmodifiableSet(skill_ids);
+    return Collections.unmodifiableSet(skills.keySet());
   }
   
   public int getSkillLevel(int skill)
@@ -679,6 +658,7 @@ public final class ManufacturingTask extends Task
     }
   }
   
+  //Update the list of relevant skills
   private void updateSkills()
   {
     IEVEDataProvider data = getDataProvider();
@@ -709,8 +689,11 @@ public final class ManufacturingTask extends Task
         newskills.put(s.getKey(), s.getValue());
       }
     }
+    boolean notify = !skills.keySet().equals(newskills.keySet());
     skills = newskills;
-    skill_ids = new TreeSet<Integer>(new SkillComparator());
-    skill_ids.addAll(skills.keySet());
+    if(notify)
+    {
+      notifyParameterChange(PARAMETER_SKILLS);
+    }
   }
 }

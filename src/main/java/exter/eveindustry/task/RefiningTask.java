@@ -140,12 +140,12 @@ public final class RefiningTask extends Task
     updateMaterials();
   }
   
-  public int getProcessingSkillLevel()
+  public int getOreProcessingSkillLevel()
   {
     return processing_skill;
   }
   
-  public void setProcessingSkillLevel(int level)
+  public void setOreProcessingSkillLevel(int level)
   {
     processing_skill = Utils.clamp(level,0,5);
     updateMaterials();

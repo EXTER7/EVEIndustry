@@ -301,7 +301,7 @@ public abstract class Task
   }
 
   
-  protected final void notifyParamaterChange(int param)
+  protected final void notifyParameterChange(int param)
   {
     // Notify all listeners.
     synchronized(task_listeners)

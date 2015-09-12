@@ -65,11 +65,6 @@ public interface IEVEDataProvider
    * Get a planet type from it's ID.
    */
   public IPlanet getPlanet(int planet_id);
-  
-  /**
-   * Get the default planet type.
-   */
-  public IPlanet getDefaultPlanet();
 
   /**
    * Get a planetary building from it's ID.
@@ -95,11 +90,6 @@ public interface IEVEDataProvider
    * Get a starbase control tower from it's ID.
    */
   public IStarbaseTower getStarbaseTower(int tower_id);
-
-  /**
-   * Get the default starbase control tower.
-   */
-  public IStarbaseTower getDefaultStarbaseTower();
 
   /**
    * Get an item's base cost.

@@ -18,27 +18,6 @@ import exter.tsl.TSLObject;
  */
 public final class GroupTask extends Task
 {
-  protected Map<String,Task> tasks;
-  
-  private int scale;
-
-  static public final int PARAMETER_TASK = 0;
-  
-  public GroupTask()
-  {
-    tasks = new HashMap<String,Task>();
-    listener = new TaskMaterialChangeListener(this);
-    scale = 1;
-    updateMaterials();
-  }
-
-  private TaskMaterialChangeListener listener;
-
-  public Map<String,Task> getTaskList()
-  {
-    return Collections.unmodifiableMap(tasks);
-  }
-
   static private class TaskMaterialChangeListener implements ITaskListener
   {
     private WeakReference<GroupTask> group_task;
@@ -70,9 +49,28 @@ public final class GroupTask extends Task
         task.unregisterListener(this);
       } else
       {
-        group.notifyParamaterChange(PARAMETER_TASK);
+        group.notifyParameterChange(PARAMETER_TASK);
       }
     }
+  }
+
+  static public final int PARAMETER_TASK = 0;  
+
+  private Map<String,Task> tasks;
+  private int scale;
+  private TaskMaterialChangeListener listener;
+
+  public GroupTask()
+  {
+    tasks = new HashMap<String,Task>();
+    listener = new TaskMaterialChangeListener(this);
+    scale = 1;
+    updateMaterials();
+  }
+
+  public Map<String,Task> getTaskList()
+  {
+    return Collections.unmodifiableMap(tasks);
   }
 
   protected List<ItemStack> getRawProducedMaterials()
@@ -123,7 +121,7 @@ public final class GroupTask extends Task
           }
         } catch(TaskLoadException e)
         {
-          e.printStackTrace();
+          // Drop invalid tasks.
         }
       }
     }
@@ -168,6 +166,7 @@ public final class GroupTask extends Task
     {
       return;
     }
+    // Do not add duplicate task names.
     int i = 2;
     String newname = name.replace('_', '-').trim();
     while(true)
