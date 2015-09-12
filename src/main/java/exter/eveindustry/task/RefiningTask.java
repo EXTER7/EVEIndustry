@@ -122,9 +122,9 @@ public final class RefiningTask extends Task
     return amount;
   }
   
-  public void setOreAmount(long amount)
+  public void setOreAmount(long ore_amount)
   {
-    amount = Utils.clamp(amount,refinable.getRequiredItem().amount,Long.MAX_VALUE);
+    amount = Utils.clamp(ore_amount,refinable.getRequiredItem().amount,Long.MAX_VALUE);
     updateMaterials();
   }
 
