@@ -168,7 +168,7 @@ public class EVEIndustryTest
     Assert.assertEquals(53,materials.get(36).amount);
     task.setReprocessingSkillLevel(5);
     task.setReprocessingEfficiencySkillLevel(5);
-    task.setProcessingSkill(5);
+    task.setProcessingSkillLevel(5);
     materials = mapMaterials(task.getProducedMaterials());
     Assert.assertEquals(74,materials.get(34).amount);
     Assert.assertEquals(148,materials.get(35).amount);

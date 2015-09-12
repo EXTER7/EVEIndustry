@@ -82,14 +82,20 @@ public final class ReactionTask extends Task
     return fuel;
   }
 
+  /**
+   * Get the run-time of the task in days.
+   */
   public int getRunTime()
   {
     return runtime;
   }
   
-  public void setRunTime(int value)
+  /**
+   * Set the run-time of the task in days.
+   */
+  public void setRunTime(int days)
   {
-    runtime = Utils.clamp(value,1,Integer.MAX_VALUE);
+    runtime = Utils.clamp(days,1,Integer.MAX_VALUE);
     updateMaterials();
   }
 

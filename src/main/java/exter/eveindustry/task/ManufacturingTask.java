@@ -424,11 +424,11 @@ public final class ManufacturingTask extends Task
     return invention != null?invention.getME():me_level;
   }
 
-  public void setME(int value)
+  public void setME(int level)
   {
     if(invention == null)
     {
-      me_level = Utils.clamp(value, 0, 10);
+      me_level = Utils.clamp(level, 0, 10);
       updateMaterials();
     }
   }
@@ -438,11 +438,11 @@ public final class ManufacturingTask extends Task
     return invention != null?invention.getTE():te_level;
   }
 
-  public void setTE(int value)
+  public void setTE(int level)
   {
     if(invention == null)
     {
-      te_level = Utils.clamp(value, 0, 20);
+      te_level = Utils.clamp(level, 0, 20);
     }
   }
   
@@ -605,9 +605,9 @@ public final class ManufacturingTask extends Task
     return prod_time;
   }
   
-  public void setSolarSystem(int sys)
+  public void setSolarSystem(int sys_id)
   {
-    system = sys;
+    system = sys_id;
   }
   
   public int getSolarSystem()
@@ -615,9 +615,9 @@ public final class ManufacturingTask extends Task
     return system;
   }
 
-  public void setInstallationTax(double t)
+  public void setInstallationTax(double percent)
   {
-    tax = t;
+    tax = Utils.clamp(percent, 0, Double.MAX_VALUE);
   }
   
   public double getInstallationTax()

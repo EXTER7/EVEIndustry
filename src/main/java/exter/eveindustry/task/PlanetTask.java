@@ -68,14 +68,20 @@ public final class PlanetTask extends Task
   }
   
 
+  /**
+   * Get the run-time of the task in days.
+   */
   public int getRunTime()
   {
     return runtime;
   }
   
-  public void setRunTime(int value)
+  /**
+   * Set the run-time of the task in days.
+   */
+  public void setRunTime(int days)
   {
-    runtime = Utils.clamp(value,1,Integer.MAX_VALUE);
+    runtime = Utils.clamp(days,1,Integer.MAX_VALUE);
     updateMaterials();
   }
 
@@ -197,16 +203,14 @@ public final class PlanetTask extends Task
     return expense;
   }
   
-
   public float getCustomsOfficeTax()
   {
     return tax_percent;
   }
-
   
-  public void setCustomsOfficeTax(float value)
+  public void setCustomsOfficeTax(float percent)
   {
-    tax_percent = Utils.clamp(value,0,100);
+    tax_percent = Utils.clamp(percent,0,100);
   }
 
   @Override

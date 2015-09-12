@@ -122,9 +122,9 @@ public final class RefiningTask extends Task
     return amount;
   }
   
-  public void setOreAmount(long value)
+  public void setOreAmount(long amount)
   {
-    amount = Utils.clamp(value,refinable.getRequiredItem().amount,Long.MAX_VALUE);
+    amount = Utils.clamp(amount,refinable.getRequiredItem().amount,Long.MAX_VALUE);
     updateMaterials();
   }
 
@@ -134,9 +134,9 @@ public final class RefiningTask extends Task
   }
 
   
-  public void setRefineryTax(float value)
+  public void setRefineryTax(float percent)
   {
-    tax_percent = Utils.clamp(value,0,100);
+    tax_percent = Utils.clamp(percent,0,100);
     updateMaterials();
   }
   
@@ -145,9 +145,9 @@ public final class RefiningTask extends Task
     return processing_skill;
   }
   
-  public void setProcessingSkill(int value)
+  public void setProcessingSkillLevel(int level)
   {
-    processing_skill = Utils.clamp(value,0,5);
+    processing_skill = Utils.clamp(level,0,5);
     updateMaterials();
   }
   
@@ -213,9 +213,9 @@ public final class RefiningTask extends Task
     return refinable;
   }
   
-  public void setInstallationEfficiency(int value)
+  public void setInstallationEfficiency(int base_eff)
   {
-    installation_efficiency = Utils.clamp(value,35,100);
+    installation_efficiency = Utils.clamp(base_eff,35,100);
     updateMaterials();
   }
   
