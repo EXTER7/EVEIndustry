@@ -22,6 +22,8 @@ public final class GroupTask extends Task
   
   private int scale;
 
+  static public final int PARAMETER_TASK = 0;
+  
   public GroupTask()
   {
     tasks = new HashMap<String,Task>();
@@ -49,13 +51,26 @@ public final class GroupTask extends Task
     @Override
     public void onMaterialSetChanged(Task task)
     {
-      GroupTask t = group_task.get();
-      if(t == null)
+      GroupTask group = group_task.get();
+      if(group == null)
       {
         task.unregisterListener(this);
       } else
       {
-        t.updateMaterials();
+        group.updateMaterials();
+      }
+    }
+
+    @Override
+    public void onParameterChanged(Task task, int parameter)
+    {
+      GroupTask group = group_task.get();
+      if(group == null)
+      {
+        task.unregisterListener(this);
+      } else
+      {
+        group.notifyParamaterChange(PARAMETER_TASK);
       }
     }
   }

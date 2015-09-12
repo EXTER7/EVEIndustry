@@ -166,10 +166,17 @@ public abstract class Task
   public interface ITaskListener
   {
     /**
-     * Called when a change in the task attributes causes material set to change.
+     * Called when a change in the task parameter causes material set to change.
      * @param task The task that sent the event.
      */
     public void onMaterialSetChanged(Task task);
+
+    /**
+     * Called when a change in the task parameter causes a change in other paramaters
+     * @param task The task that sent the event.
+     * @param parameter the parameter that that changed (task class specific).
+     */
+    public void onParameterChanged(Task task,int parameter);
   }
 
 
@@ -293,6 +300,19 @@ public abstract class Task
     }
   }
 
+  
+  protected final void notifyParamaterChange(int param)
+  {
+    // Notify all listeners.
+    synchronized(task_listeners)
+    {
+      for(ITaskListener listener : task_listeners)
+      {
+        listener.onParameterChanged(this, param);
+      }
+    }
+  }
+  
   /**
    * Set the market of a material.
    * @param item The material item.

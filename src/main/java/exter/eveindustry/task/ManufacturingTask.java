@@ -262,6 +262,9 @@ public final class ManufacturingTask extends Task
     }
   }
 
+  static public final int PARAMETER_INVENTION_RUNS = 0;
+  static public final int PARAMETER_INVENTION_ATTEMPTS = 1;
+  
   private Hardwiring hardwiring;
 
   private int me_level;
@@ -474,6 +477,8 @@ public final class ManufacturingTask extends Task
       int ir = Utils.clamp(getProductionTime() / invention.getInventionTime(),1,(int)Math.ceil(c / invention.getChance()));
       invention.setInventionRuns(ir);
       invention.setAttempts((int)Math.ceil(c / (invention.getChance() * ir)));
+      notifyParamaterChange(PARAMETER_INVENTION_RUNS);
+      notifyParamaterChange(PARAMETER_INVENTION_ATTEMPTS);
     } else
     {
       copies = c;

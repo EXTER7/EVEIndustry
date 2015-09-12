@@ -23,6 +23,8 @@ public final class PlanetTask extends Task
   private float tax_percent;
   private List<IPlanetBuilding> buildings;
 
+  static private final int PARAMETER_BUILDINGS = 0;
+  
   public PlanetTask()
   {
     this(getDataProvider().getDefaultPlanet());
@@ -94,6 +96,7 @@ public final class PlanetTask extends Task
   {
     planet = value;
     int i;
+    boolean removed = false;
     for(i = buildings.size() - 1; i >= 0; i--)
     {
       IPlanetBuilding p = buildings.get(i);
@@ -102,12 +105,18 @@ public final class PlanetTask extends Task
         if(!planet.getResources().contains(p.getProduct().item))
         {
           buildings.remove(i);
+          removed = true;
         }
       }
       if(p.getLevel() == 4 && !planet.isAdvanced())
       {
         buildings.remove(i);
+        removed = true;
       }
+    }
+    if(removed)
+    {
+      notifyParamaterChange(PARAMETER_BUILDINGS);
     }
     updateMaterials();
   }
