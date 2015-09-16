@@ -1,12 +1,11 @@
 package exter.eveindustry.test;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import exter.eveindustry.item.ItemStack;
 import exter.eveindustry.task.ManufacturingTask;

@@ -2,9 +2,9 @@ package exter.eveindustry.test.data.decryptor;
 
 import exter.eveindustry.data.decryptor.IDecryptor;
 import exter.eveindustry.data.inventory.IItem;
-import exter.tsl.TSLObject;
 import exter.eveindustry.test.data.inventory.InventoryDA;
 import exter.eveindustry.test.data.inventory.Item;
+import exter.tsl.TSLObject;
 
 public class Decryptor implements IDecryptor
 {

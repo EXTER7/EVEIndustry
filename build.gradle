@@ -19,21 +19,3 @@ test
   workingDir = new File("./testdata")
 }
 
-sourceSets
-{
-  main
-  {
-    java
-    {
-      srcDirs 'src/main/java'
-    }
-  }
-
-  test
-  {
-    java
-    {
-      srcDir 'src/test/java'
-    }
-  }
-}

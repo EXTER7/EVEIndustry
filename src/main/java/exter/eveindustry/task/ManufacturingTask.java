@@ -658,7 +658,7 @@ public final class ManufacturingTask extends Task
     }
   }
   
-  //Update the list of relevant skills
+  //update the list of relevant skills
   private void updateSkills()
   {
     IEVEDataProvider data = getDataProvider();
