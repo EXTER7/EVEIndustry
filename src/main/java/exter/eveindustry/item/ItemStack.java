@@ -125,7 +125,7 @@ public final class ItemStack
     long scaled = (long)(amount * scale);
     if(scaled == 0)
     {
-      return null;
+      scaled = 1;
     }
     return new ItemStack(item,scaled);
   }
