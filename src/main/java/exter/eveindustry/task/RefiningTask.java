@@ -234,9 +234,13 @@ public final class RefiningTask extends Task
   protected List<ItemStack> getRawProducedMaterials()
   {
     List<ItemStack> list = new ArrayList<ItemStack>();
-    for(ItemStack m : refinable.getProducts())
+    for(ItemStack product : refinable.getProducts())
     {
-      list.add(getEffectiveProduct(m, amount));
+      product = getEffectiveProduct(product, amount);
+      if(product != null)
+      {
+        list.add(product);
+      }
     }
     return list;
   }
