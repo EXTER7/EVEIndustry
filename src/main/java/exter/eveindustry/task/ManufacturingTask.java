@@ -203,7 +203,7 @@ public final class ManufacturingTask extends Task
     }
 
 
-    public IInventionInstallation GetInstallation()
+    public IInventionInstallation getInstallation()
     {
       return installation;
     }

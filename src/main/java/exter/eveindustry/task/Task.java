@@ -66,13 +66,13 @@ public abstract class Task
       }
     }
 
-    //ID of the solar system of the market.
+    // ID of the solar system of the market.
     public final int system;
 
-    //Order type.
+    // Order type.
     public final Order order;
     
-    //Manual price used in the case of Order.MANUAL
+    // Manual price used in the case of Order.MANUAL
     public final BigDecimal manual;
 
     public Market(int aSystem, Order aOrder, BigDecimal aManual)
@@ -172,7 +172,7 @@ public abstract class Task
     public void onMaterialSetChanged(Task task);
 
     /**
-     * Called when a change in the task parameter causes a change in other paramaters
+     * Called when a change in the task parameter causes a change in other parameters
      * @param task The task that sent the event.
      * @param parameter the parameter that that changed (task class specific).
      */
@@ -186,7 +186,7 @@ public abstract class Task
   private List<ItemStack> required_materials;
   private List<ItemStack> produced_materials;
   
-  //Used for loading/saving from/to TSL Objects.
+  // Used for loading/saving from/to TSL Objects.
   static private Map<String, Class<? extends Task>> task_types;
   static private Map<Class<? extends Task>, String> task_names;
   
@@ -195,9 +195,9 @@ public abstract class Task
   
   /**
    * Called when the task is being loaded from a TSL object.
-   * @param tsl TSL Oject to load data from.
-   * @throws TaskLoadException When the task contains an invalid attibribute
-   *  which invalidates the task (e.g. non-existant blueprints).
+   * @param tsl TSL Object to load data from.
+   * @throws TaskLoadException When the task contains an invalid attribute
+   *  which invalidates the task (e.g. non-existent blueprints).
    */
   protected abstract void onLoadDataFromTSL(TSLObject tsl) throws TaskLoadException;
 
@@ -205,7 +205,7 @@ public abstract class Task
    * Called when updating materials
    * Get raw produced materials by the task.
    * The result from this method is then condensed with the required materials
-   * merging duplicate items, and cancelling out intermediate materials.
+   * merging duplicate items, and canceling out intermediate materials.
    */
   protected abstract List<ItemStack> getRawProducedMaterials();
   
@@ -213,7 +213,7 @@ public abstract class Task
    * Called when updating materials
    * Get raw required materials for the task.
    * The result from this method is then condensed with the produced materials
-   * merging duplicate items, and cancelling out intermediate materials.
+   * merging duplicate items, and canceling out intermediate materials.
    */
   protected abstract List<ItemStack> getRawRequiredMaterials();
 
@@ -252,7 +252,7 @@ public abstract class Task
     required_materials = new ArrayList<ItemStack>();
     
     // Condense both material lists, merging duplicate items,
-    // and cancelling out intermediate materials.
+    // and canceling out intermediate materials.
     Map<Integer,Long> materials = new HashMap<Integer,Long>();
     for(ItemStack mat:getRawProducedMaterials())
     {
@@ -267,7 +267,7 @@ public abstract class Task
       materials.put(id, amount - mat.amount);
     }
     
-    //Separate required materials from produced materials.
+    // Separate required materials from produced materials.
     for(Map.Entry<Integer, Long> mat:materials.entrySet())
     {
       int id = mat.getKey();
@@ -418,7 +418,7 @@ public abstract class Task
 
   /**
    * Write the task to a TSL Object
-   * @param tsl TSL Oject to write the task.
+   * @param tsl TSL Object to write the task.
    */
   public void writeToTSL(TSLObject tsl)
   {

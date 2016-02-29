@@ -67,7 +67,7 @@ public interface IBlueprint
     public List<ItemStack> getMaterials();
     
     /**
-     * Get the ID of the corresponding "Encrytion Methods" skill.
+     * Get the ID of the corresponding "Encryption Methods" skill.
      */
     public int getEncryptionSkillID();
 

@@ -14,7 +14,7 @@ import exter.tsl.TSLObject;
 
 /**
  * @author exter
- * Planetary interation task
+ * Planetary interaction task
  */
 public final class PlanetTask extends Task
 {
