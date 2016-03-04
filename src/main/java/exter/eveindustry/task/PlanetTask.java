@@ -168,7 +168,7 @@ public final class PlanetTask extends Task
     for(int id:tsl.getStringAsIntegerList("building"))
     {
       IPlanetBuilding p = getDataProvider().getPlanetBuilding(id);
-      if(p != null && (p.getMaterials().size() > 0 || planet.getResources().contains(p.getProduct())))
+      if(p != null && (p.getMaterials().size() > 0 || planet.getResources().contains(p.getProduct().item)))
       {
         buildings.add(p);
       }
