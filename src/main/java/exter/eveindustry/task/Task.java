@@ -137,18 +137,18 @@ public abstract class Task
     // Transaction tax.
     public final BigDecimal transaction;
 
-    public Market(int system, Order order, BigDecimal manual, double broker,double transaction)
+    public Market(int system, Order order, BigDecimal manual, BigDecimal broker,BigDecimal transaction)
     {
       this.system = system;
       this.order = order;
-      this.manual = manual;
-      this.broker = new BigDecimal(broker / 100);
-      this.transaction = new BigDecimal(transaction/ 100);
+      this.manual = Utils.clamp(manual,BigDecimal.ZERO,null);
+      this.broker = Utils.clamp(broker,BigDecimal.ZERO,BigDecimal.ONE);
+      this.transaction = Utils.clamp(transaction,BigDecimal.ZERO,BigDecimal.ONE);
     }
 
     public Market(int system, Order order)
     {
-      this(system,order,BigDecimal.ZERO,0.03,0.02);
+      this(system,order,BigDecimal.ZERO,new BigDecimal("0.03"),new BigDecimal("0.02"));
     }
 
     public Market(Market p)
@@ -170,8 +170,8 @@ public abstract class Task
       system = tsl.getStringAsInt("system", getDataProvider().getDefaultSolarSystem());
       order = Order.fromInt(tsl.getStringAsInt("order", tsl.getStringAsInt("source", Order.SELL.value)));
       manual = Utils.clamp(tsl.getStringAsBigDecimal("manual", BigDecimal.ZERO),BigDecimal.ZERO,null);
-      broker = Utils.clamp(tsl.getStringAsBigDecimal("broker", new BigDecimal(0.03)),BigDecimal.ZERO,BigDecimal.ONE);
-      transaction = Utils.clamp(tsl.getStringAsBigDecimal("transaction", new BigDecimal(0.02)),BigDecimal.ZERO,BigDecimal.ONE);
+      broker = Utils.clamp(tsl.getStringAsBigDecimal("broker", new BigDecimal("0.03")),BigDecimal.ZERO,BigDecimal.ONE);
+      transaction = Utils.clamp(tsl.getStringAsBigDecimal("transaction", new BigDecimal("0.02")),BigDecimal.ZERO,BigDecimal.ONE);
     }
 
     public void writeToTSL(TSLObject tsl)
@@ -548,14 +548,14 @@ public abstract class Task
       case BUY:
         if(market.order == Market.Order.BUY)
         {
-          price.add(broker);
+          price = price.add(broker);
         }
         break;
       case SELL:
-        price.subtract(tax);
+        price = price.subtract(tax);
         if(market.order == Market.Order.SELL)
         {
-          price.subtract(broker);
+          price = price.subtract(broker);
         }
         if(price.signum() < 0)
         {

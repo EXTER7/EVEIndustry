@@ -1,6 +1,8 @@
 package exter.eveindustry.test.data.inventory;
 
 
+import java.math.BigDecimal;
+
 import exter.eveindustry.data.inventory.IItem;
 import exter.tsl.TSLObject;
 
@@ -12,7 +14,9 @@ public class Item implements IItem
   public final double Volume;
   public final boolean Market;
   public final int MetaGroup;
-  
+  public final BigDecimal Sell;
+  public final BigDecimal Buy;
+
   public final String NameLowercase;
 
   @Override
@@ -40,6 +44,8 @@ public class Item implements IItem
     Volume = tsl.getStringAsFloat("vol", -1);
     Market = tsl.getStringAsInt("market",0) != 0;
     MetaGroup = tsl.getStringAsInt("mg", -1);
+    Buy = tsl.getStringAsBigDecimal("buy", BigDecimal.ZERO);
+    Sell = tsl.getStringAsBigDecimal("sell", BigDecimal.ZERO);
     NameLowercase = Name.toLowerCase();
   }
 

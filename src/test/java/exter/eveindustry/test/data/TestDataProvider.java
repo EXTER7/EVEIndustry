@@ -20,6 +20,7 @@ import exter.eveindustry.test.data.blueprint.InstallationDA;
 import exter.eveindustry.test.data.blueprint.InstallationGroup;
 import exter.eveindustry.test.data.decryptor.DecryptorDA;
 import exter.eveindustry.test.data.inventory.InventoryDA;
+import exter.eveindustry.test.data.inventory.Item;
 import exter.eveindustry.test.data.planet.PlanetBuildingDA;
 import exter.eveindustry.test.data.planet.PlanetDA;
 import exter.eveindustry.test.data.reaction.ReactionDA;
@@ -137,7 +138,17 @@ public class TestDataProvider implements IEVEDataProvider
   @Override
   public BigDecimal getMarketPrice(IItem item, Market market)
   {
-    return BigDecimal.ZERO;
+    switch(market.order)
+    {
+      case BUY:
+        return ((Item)item).Buy;
+      case MANUAL:
+        return market.manual;
+      case SELL:
+        return ((Item)item).Sell;
+      default:
+        return BigDecimal.ZERO;
+    }
   }
 
   @Override

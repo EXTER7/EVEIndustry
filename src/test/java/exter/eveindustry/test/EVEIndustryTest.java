@@ -3,17 +3,22 @@ package exter.eveindustry.test;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import exter.eveindustry.data.inventory.IItem;
 import exter.eveindustry.item.ItemStack;
 import exter.eveindustry.task.ManufacturingTask;
 import exter.eveindustry.task.PlanetTask;
 import exter.eveindustry.task.ReactionTask;
 import exter.eveindustry.task.RefiningTask;
 import exter.eveindustry.task.Task;
+import exter.eveindustry.task.Task.Market;
+import exter.eveindustry.task.Task.Market.MarketAction;
 import exter.eveindustry.test.data.TestDataProvider;
+import exter.eveindustry.test.data.inventory.Item;
 
 public class EVEIndustryTest
 {
@@ -83,16 +88,24 @@ public class EVEIndustryTest
   @Test
   public void testPlanetDA()
   {
-    Assert.assertNotEquals(provider.getPlanet(2015), null);
+    Assert.assertNotEquals(null, provider.getPlanet(2015));
   }
   
   @Test
   public void testStarmap()
   {
-    Assert.assertNotEquals(provider.getSolarSystemIndustryCost(30000142), null);
-    Assert.assertNotEquals(provider.getSolarSystemIndustryCost(30002798), null);
+    Assert.assertNotEquals(null, provider.getSolarSystemIndustryCost(30000142));
+    Assert.assertNotEquals(null, provider.getSolarSystemIndustryCost(30002798));
   }
-  
+
+  @Test
+  public void testPriceData()
+  {
+    IItem item = provider.getItem(34);
+    Assert.assertEquals(new BigDecimal("5"), provider.getMarketPrice(item, new Task.Market(30000142,Task.Market.Order.BUY)));
+    Assert.assertEquals(new BigDecimal("6"), provider.getMarketPrice(item, new Task.Market(30000142,Task.Market.Order.SELL)));
+  }
+
   @Test
   public void testManufacturingTask()
   {
@@ -157,10 +170,6 @@ public class EVEIndustryTest
     Assert.assertEquals(1,task.getRequiredMaterials().size());
     Assert.assertEquals(100,task.getRequiredMaterials().get(0).amount);
     Map<Integer,ItemStack> materials = mapMaterials(task.getProducedMaterials());
-    Assert.assertEquals(50,materials.get(34).amount);
-    Assert.assertEquals(101,materials.get(35).amount);
-    Assert.assertEquals(50,materials.get(36).amount);
-    task.setRefineryTax(0);
     materials = mapMaterials(task.getProducedMaterials());
     Assert.assertEquals(53,materials.get(34).amount);
     Assert.assertEquals(106,materials.get(35).amount);
@@ -177,8 +186,26 @@ public class EVEIndustryTest
     Assert.assertEquals(967,materials.get(34).amount);
     Assert.assertEquals(1926,materials.get(35).amount);
     Assert.assertEquals(967,materials.get(36).amount);
-    Assert.assertEquals(task.getRequiredMaterials().size(),1);
-    Assert.assertEquals(task.getRequiredMaterials().get(0).amount,1300);
+    Assert.assertEquals(1,task.getRequiredMaterials().size());
+    Assert.assertEquals(1300,task.getRequiredMaterials().get(0).amount);
+  }
+
+  @Test
+  public void testTaskMarket()
+  {
+    IItem product = provider.getItem(178);
+    ManufacturingTask task = new ManufacturingTask(provider.getBlueprint(178));
+    Assert.assertEquals("6",task.getMaterialMarketPrice(provider.getItem(34),MarketAction.BUY).toPlainString());
+    Assert.assertEquals("12",task.getMaterialMarketPrice(provider.getItem(35),MarketAction.BUY).toPlainString());
+    Assert.assertEquals("2.85",task.getMaterialMarketPrice(product,MarketAction.SELL).toPlainString());
+    task.setMaterialMarket(product, new Market(provider.getDefaultSolarSystem(),Market.Order.BUY));
+    Assert.assertEquals("1.96",task.getMaterialMarketPrice(product,MarketAction.SELL).toPlainString());
+    task.setMaterialMarket(product, new Market(provider.getDefaultSolarSystem(),Market.Order.SELL,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO));
+    Assert.assertEquals("3",task.getMaterialMarketPrice(product,MarketAction.SELL).toPlainString());
+    
+    task.setMaterialMarket(product, new Market(provider.getDefaultSolarSystem(),Market.Order.SELL));
+    Assert.assertEquals("414",task.getExpense().toPlainString());
+    Assert.assertEquals("285.00",task.getIncome().toPlainString());
   }
 
   static
