@@ -11,6 +11,7 @@ import java.util.Map;
 import exter.eveindustry.data.IEVEDataProvider;
 import exter.eveindustry.data.inventory.IItem;
 import exter.eveindustry.item.ItemStack;
+import exter.eveindustry.task.Task.Market.MarketAction;
 import exter.eveindustry.util.Utils;
 import exter.tsl.TSLObject;
 
@@ -28,6 +29,54 @@ public abstract class Task
    */
   static public final class Market
   {
+    @Override
+    public int hashCode()
+    {
+      final int prime = 3389;
+      int result = 1;
+      result = prime * result + ((broker == null) ? 0 : broker.hashCode());
+      result = prime * result + ((manual == null) ? 0 : manual.hashCode());
+      result = prime * result + ((order == null) ? 0 : order.hashCode());
+      result = prime * result + system;
+      result = prime * result + ((transaction == null) ? 0 : transaction.hashCode());
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+      if(this == obj)
+        return true;
+      if(obj == null)
+        return false;
+      if(getClass() != obj.getClass())
+        return false;
+      Market other = (Market) obj;
+      if(broker == null)
+      {
+        if(other.broker != null)
+          return false;
+      } else if(!broker.equals(other.broker))
+        return false;
+      if(manual == null)
+      {
+        if(other.manual != null)
+          return false;
+      } else if(!manual.equals(other.manual))
+        return false;
+      if(order != other.order)
+        return false;
+      if(system != other.system)
+        return false;
+      if(transaction == null)
+      {
+        if(other.transaction != null)
+          return false;
+      } else if(!transaction.equals(other.transaction))
+        return false;
+      return true;
+    }
+
     /**
      * @author exter
      * Market order type (sell orders, buy orders, manually priced)
@@ -65,6 +114,13 @@ public abstract class Task
         return intmap.get(i);
       }
     }
+    
+    public enum MarketAction
+    {
+      BUY,
+      SELL,
+      UNKOWN
+    }
 
     // ID of the solar system of the market.
     public final int system;
@@ -74,12 +130,25 @@ public abstract class Task
     
     // Manual price used in the case of Order.MANUAL
     public final BigDecimal manual;
+    
+    // Broker fees.
+    public final BigDecimal broker;
 
-    public Market(int aSystem, Order aOrder, BigDecimal aManual)
+    // Transaction tax.
+    public final BigDecimal transaction;
+
+    public Market(int system, Order order, BigDecimal manual, double broker,double transaction)
     {
-      system = aSystem;
-      order = aOrder;
-      manual = aManual;
+      this.system = system;
+      this.order = order;
+      this.manual = manual;
+      this.broker = new BigDecimal(broker / 100);
+      this.transaction = new BigDecimal(transaction/ 100);
+    }
+
+    public Market(int system, Order order)
+    {
+      this(system,order,BigDecimal.ZERO,0.03,0.02);
     }
 
     public Market(Market p)
@@ -87,20 +156,22 @@ public abstract class Task
       system = p.system;
       order = p.order;
       manual = p.manual;
+      broker = p.broker;
+      transaction = p.transaction;
     }
 
     public Market()
     {
-      system = getDataProvider().getDefaultSolarSystem();
-      order = Order.SELL;
-      manual = BigDecimal.ZERO;
+      this(getDataProvider().getDefaultSolarSystem(),Order.SELL);
     }
 
     public Market(TSLObject tsl)
     {
       system = tsl.getStringAsInt("system", getDataProvider().getDefaultSolarSystem());
       order = Order.fromInt(tsl.getStringAsInt("order", tsl.getStringAsInt("source", Order.SELL.value)));
-      manual = tsl.getStringAsBigDecimal("manual", BigDecimal.ZERO);
+      manual = Utils.clamp(tsl.getStringAsBigDecimal("manual", BigDecimal.ZERO),BigDecimal.ZERO,null);
+      broker = Utils.clamp(tsl.getStringAsBigDecimal("broker", new BigDecimal(0.03)),BigDecimal.ZERO,BigDecimal.ONE);
+      transaction = Utils.clamp(tsl.getStringAsBigDecimal("transaction", new BigDecimal(0.02)),BigDecimal.ZERO,BigDecimal.ONE);
     }
 
     public void writeToTSL(TSLObject tsl)
@@ -108,55 +179,10 @@ public abstract class Task
       tsl.putString("system", system);
       tsl.putString("order", order.value);
       tsl.putString("manual", manual);
+      tsl.putString("broker", broker);
+      tsl.putString("transaction", transaction);
     }
 
-    @Override
-    public int hashCode()
-    {
-      final int prime = 3389;
-      int result = 1;
-      result = prime * result + ((manual == null) ? 0 : manual.hashCode());
-      result = prime * result + ((order == null) ? 0 : order.hashCode());
-      result = prime * result + system;
-      return result;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-      if(this == obj)
-      {
-        return true;
-      }
-      if(obj == null)
-      {
-        return false;
-      }
-      if(getClass() != obj.getClass())
-      {
-        return false;
-      }
-      Market other = (Market) obj;
-      if(manual == null)
-      {
-        if(other.manual != null)
-        {
-          return false;
-        }
-      } else if(!manual.equals(other.manual))
-      {
-        return false;
-      }
-      if(order != other.order)
-      {
-        return false;
-      }
-      if(system != other.system)
-      {
-        return false;
-      }
-      return true;
-    }
   }
 
   /**
@@ -397,7 +423,7 @@ public abstract class Task
     BigDecimal sum = BigDecimal.ZERO;
     for(ItemStack m : getProducedMaterials())
     {
-      sum = sum.add(getMaterialMarketPrice(m));
+      sum = sum.add(getMaterialMarketPrice(m,MarketAction.SELL));
     }
     return sum;
   }
@@ -411,7 +437,7 @@ public abstract class Task
     BigDecimal sum = getExtraExpense();
     for(ItemStack m : getRequiredMaterials())
     {
-      sum = sum.add(getMaterialMarketPrice(m));
+      sum = sum.add(getMaterialMarketPrice(m,MarketAction.BUY));
     }
     return sum;
   }
@@ -471,7 +497,7 @@ public abstract class Task
   {
     return material_markets.get(item.getID());
   }
-  
+
   /**
    * Get the market price of a material stack.
    * @param item the material stack to lookup the price.
@@ -479,24 +505,88 @@ public abstract class Task
    */
   public final BigDecimal getMaterialMarketPrice(ItemStack item)
   {
-    return getMaterialMarketPrice(item.item).multiply(new BigDecimal(item.amount));
+    return getMaterialMarketPrice(item,MarketAction.UNKOWN);
   }
 
-  
+  /**
+   * Get the market price of a material stack, including broker fees and tax.
+   * @param item the material stack to lookup the price.
+   * @param action the type of transaction being done.
+   * @return The price/unit of the material multiplied by the stack amount.
+   */
+  public final BigDecimal getMaterialMarketPrice(ItemStack item, MarketAction action)
+  {
+    return getMaterialMarketPrice(item.item,action).multiply(new BigDecimal(item.amount));
+  }
+
   /**
    * Get the market of a material item.
    * @param item the material stack to lookup the price.
    */
   public final BigDecimal getMaterialMarketPrice(IItem item)
   {
+    return getMaterialMarketPrice(item,MarketAction.UNKOWN);
+  }
+  
+  /**
+   * Get the market of a material item, including broker fees and tax.
+   * @param item the material stack to lookup the price.
+   * @param action the type of transaction being done.
+   */
+  public final BigDecimal getMaterialMarketPrice(IItem item, MarketAction action)
+  {
     Market market = getMaterialMarket(item);
     if(market == null)
     {
       return BigDecimal.ZERO;
     }
-    return getDataProvider().getMarketPrice(item, market);
+    BigDecimal price = getDataProvider().getMarketPrice(item, market);
+    BigDecimal tax = price.multiply(market.transaction);
+    BigDecimal broker = price.multiply(market.broker);
+    switch(action)
+    {
+      case BUY:
+        if(market.order == Market.Order.BUY)
+        {
+          price.add(broker);
+        }
+        break;
+      case SELL:
+        price.subtract(tax);
+        if(market.order == Market.Order.SELL)
+        {
+          price.subtract(broker);
+        }
+        if(price.signum() < 0)
+        {
+          price = BigDecimal.ZERO;
+        }
+        break;
+      default:
+    }
+    return price;
   }
-  
+
+  public final BigDecimal getMaterialBrokerFee(IItem item)
+  {
+    Market market = getMaterialMarket(item);
+    if(market == null)
+    {
+      return BigDecimal.ZERO;
+    }
+    return getDataProvider().getMarketPrice(item, market).multiply(market.broker);
+  }
+
+  public final BigDecimal getMaterialTransactionTax(IItem item)
+  {
+    Market market = getMaterialMarket(item);
+    if(market == null)
+    {
+      return BigDecimal.ZERO;
+    }
+    return getDataProvider().getMarketPrice(item, market).multiply(market.transaction);
+  }
+
   /**
    * Get the current data provider.
    */

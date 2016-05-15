@@ -1,5 +1,6 @@
 package exter.eveindustry.util;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 /**
@@ -69,7 +70,20 @@ public final class Utils
     }
     return v;
   }
-  
+
+  static public BigDecimal clamp(BigDecimal v,BigDecimal min,BigDecimal max)
+  {
+    if(min != null && v.compareTo(min) < 0)
+    {
+      return min;
+    }
+    if(max != null && v.compareTo(max) > 0)
+    {
+      return max;
+    }
+    return v;
+  }
+
   static public <K,V> V mapGet(Map<K,V> map, K key,V def)
   {
     V res = map.get(key);
