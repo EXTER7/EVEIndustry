@@ -208,12 +208,12 @@ public class TestDataProvider implements IEVEDataProvider
   @Override
   public BigDecimal getDefaultBrokerFee()
   {
-    return new BigDecimal("0.03");
+    return new BigDecimal("3");
   }
 
   @Override
   public BigDecimal getDefaultTransactionTax()
   {
-    return new BigDecimal("0.02");
+    return new BigDecimal("2");
   }
 }

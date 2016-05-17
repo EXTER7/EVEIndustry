@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -189,22 +190,24 @@ public class EVEIndustryTest
     Assert.assertEquals(1300,task.getRequiredMaterials().get(0).amount);
   }
 
+  static private final DecimalFormat ISK_FORMATTER = new DecimalFormat("#.##");
+  
   @Test
   public void testTaskMarket()
   {
     IItem product = provider.getItem(178);
     ManufacturingTask task = new ManufacturingTask(provider.getBlueprint(178));
-    Assert.assertEquals("6",task.getMaterialMarketPrice(provider.getItem(34),MarketAction.BUY).toPlainString());
-    Assert.assertEquals("12",task.getMaterialMarketPrice(provider.getItem(35),MarketAction.BUY).toPlainString());
-    Assert.assertEquals("2.85",task.getMaterialMarketPrice(product,MarketAction.SELL).toPlainString());
+    Assert.assertEquals("6",ISK_FORMATTER.format(task.getMaterialMarketPrice(provider.getItem(34),MarketAction.BUY)));
+    Assert.assertEquals("12",ISK_FORMATTER.format(task.getMaterialMarketPrice(provider.getItem(35),MarketAction.BUY)));
+    Assert.assertEquals("2.85",ISK_FORMATTER.format(task.getMaterialMarketPrice(product,MarketAction.SELL)));
     task.setMaterialMarket(product, new Market(provider.getDefaultSolarSystem(),Market.Order.BUY));
-    Assert.assertEquals("1.96",task.getMaterialMarketPrice(product,MarketAction.SELL).toPlainString());
+    Assert.assertEquals("1.96",ISK_FORMATTER.format(task.getMaterialMarketPrice(product,MarketAction.SELL)));
     task.setMaterialMarket(product, new Market(provider.getDefaultSolarSystem(),Market.Order.SELL,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO));
-    Assert.assertEquals("3",task.getMaterialMarketPrice(product,MarketAction.SELL).toPlainString());
+    Assert.assertEquals("3",ISK_FORMATTER.format(task.getMaterialMarketPrice(product,MarketAction.SELL)));
     
     task.setMaterialMarket(product, new Market(provider.getDefaultSolarSystem(),Market.Order.SELL));
-    Assert.assertEquals("414",task.getExpense().toPlainString());
-    Assert.assertEquals("285.00",task.getIncome().toPlainString());
+    Assert.assertEquals("414",ISK_FORMATTER.format(task.getExpense()));
+    Assert.assertEquals("285",ISK_FORMATTER.format(task.getIncome()));
   }
 
   static

@@ -142,8 +142,8 @@ public abstract class Task
       this.system = system;
       this.order = order;
       this.manual = Utils.clamp(manual,BigDecimal.ZERO,null);
-      this.broker = Utils.clamp(broker,BigDecimal.ZERO,BigDecimal.ONE);
-      this.transaction = Utils.clamp(transaction,BigDecimal.ZERO,BigDecimal.ONE);
+      this.broker = Utils.clamp(broker,BigDecimal.ZERO,HOUNDRED);
+      this.transaction = Utils.clamp(transaction,BigDecimal.ZERO,HOUNDRED);
     }
 
     public Market(int system, Order order)
@@ -170,8 +170,8 @@ public abstract class Task
       system = tsl.getStringAsInt("system", getDataProvider().getDefaultSolarSystem());
       order = Order.fromInt(tsl.getStringAsInt("order", tsl.getStringAsInt("source", Order.SELL.value)));
       manual = Utils.clamp(tsl.getStringAsBigDecimal("manual", BigDecimal.ZERO),BigDecimal.ZERO,null);
-      broker = Utils.clamp(tsl.getStringAsBigDecimal("broker", provider.getDefaultBrokerFee()),BigDecimal.ZERO,BigDecimal.ONE);
-      transaction = Utils.clamp(tsl.getStringAsBigDecimal("transaction", provider.getDefaultTransactionTax()),BigDecimal.ZERO,BigDecimal.ONE);
+      broker = Utils.clamp(tsl.getStringAsBigDecimal("broker", provider.getDefaultBrokerFee()),BigDecimal.ZERO,HOUNDRED);
+      transaction = Utils.clamp(tsl.getStringAsBigDecimal("transaction", provider.getDefaultTransactionTax()),BigDecimal.ZERO,HOUNDRED);
     }
 
     public void writeToTSL(TSLObject tsl)
@@ -218,6 +218,9 @@ public abstract class Task
   
   
   static private IEVEDataProvider provider = null;
+  
+  static private final BigDecimal PERCENT = new BigDecimal("0.01");
+  static private final BigDecimal HOUNDRED = new BigDecimal("100");
   
   /**
    * Called when the task is being loaded from a TSL object.
@@ -541,8 +544,8 @@ public abstract class Task
       return BigDecimal.ZERO;
     }
     BigDecimal price = getDataProvider().getMarketPrice(item, market);
-    BigDecimal tax = price.multiply(market.transaction);
-    BigDecimal broker = price.multiply(market.broker);
+    BigDecimal tax = price.multiply(market.transaction.multiply(PERCENT));
+    BigDecimal broker = price.multiply(market.broker.multiply(PERCENT));
     switch(action)
     {
       case BUY:
@@ -574,7 +577,7 @@ public abstract class Task
     {
       return BigDecimal.ZERO;
     }
-    return getDataProvider().getMarketPrice(item, market).multiply(market.broker);
+    return getDataProvider().getMarketPrice(item, market).multiply(market.broker.multiply(PERCENT));
   }
 
   public final BigDecimal getMaterialTransactionTax(IItem item)
@@ -584,7 +587,7 @@ public abstract class Task
     {
       return BigDecimal.ZERO;
     }
-    return getDataProvider().getMarketPrice(item, market).multiply(market.transaction);
+    return getDataProvider().getMarketPrice(item, market).multiply(market.transaction.multiply(PERCENT));
   }
 
   /**
