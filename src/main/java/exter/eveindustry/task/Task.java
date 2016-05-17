@@ -148,7 +148,7 @@ public abstract class Task
 
     public Market(int system, Order order)
     {
-      this(system,order,BigDecimal.ZERO,new BigDecimal("0.03"),new BigDecimal("0.02"));
+      this(system,order,BigDecimal.ZERO,provider.getDefaultBrokerFee(),provider.getDefaultTransactionTax());
     }
 
     public Market(Market p)
@@ -170,8 +170,8 @@ public abstract class Task
       system = tsl.getStringAsInt("system", getDataProvider().getDefaultSolarSystem());
       order = Order.fromInt(tsl.getStringAsInt("order", tsl.getStringAsInt("source", Order.SELL.value)));
       manual = Utils.clamp(tsl.getStringAsBigDecimal("manual", BigDecimal.ZERO),BigDecimal.ZERO,null);
-      broker = Utils.clamp(tsl.getStringAsBigDecimal("broker", new BigDecimal("0.03")),BigDecimal.ZERO,BigDecimal.ONE);
-      transaction = Utils.clamp(tsl.getStringAsBigDecimal("transaction", new BigDecimal("0.02")),BigDecimal.ZERO,BigDecimal.ONE);
+      broker = Utils.clamp(tsl.getStringAsBigDecimal("broker", provider.getDefaultBrokerFee()),BigDecimal.ZERO,BigDecimal.ONE);
+      transaction = Utils.clamp(tsl.getStringAsBigDecimal("transaction", provider.getDefaultTransactionTax()),BigDecimal.ZERO,BigDecimal.ONE);
     }
 
     public void writeToTSL(TSLObject tsl)

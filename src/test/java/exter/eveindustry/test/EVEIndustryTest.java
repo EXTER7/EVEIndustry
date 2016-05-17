@@ -18,7 +18,6 @@ import exter.eveindustry.task.Task;
 import exter.eveindustry.task.Task.Market;
 import exter.eveindustry.task.Task.Market.MarketAction;
 import exter.eveindustry.test.data.TestDataProvider;
-import exter.eveindustry.test.data.inventory.Item;
 
 public class EVEIndustryTest
 {
