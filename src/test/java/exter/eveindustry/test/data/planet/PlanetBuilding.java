@@ -61,6 +61,6 @@ public class PlanetBuilding implements IPlanetBuilding
   @Override
   public int getID()
   {
-    return ProductItem.item.getID();
+    return ProductItem.item_id.getID();
   }
 }

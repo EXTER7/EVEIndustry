@@ -1,6 +1,5 @@
 package exter.eveindustry.task;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import exter.eveindustry.data.IEVEDataProvider;
 import exter.eveindustry.data.inventory.IItem;
 import exter.eveindustry.item.ItemStack;
-import exter.eveindustry.task.Task.Market.MarketAction;
+import exter.eveindustry.market.Market;
 import exter.eveindustry.util.Utils;
 import exter.tsl.TSLObject;
 
@@ -27,163 +25,6 @@ public abstract class Task
    * @author exter
    * Determines which market a material is bought/sold.
    */
-  static public final class Market
-  {
-    @Override
-    public int hashCode()
-    {
-      final int prime = 3389;
-      int result = 1;
-      result = prime * result + ((broker == null) ? 0 : broker.hashCode());
-      result = prime * result + ((manual == null) ? 0 : manual.hashCode());
-      result = prime * result + ((order == null) ? 0 : order.hashCode());
-      result = prime * result + system;
-      result = prime * result + ((transaction == null) ? 0 : transaction.hashCode());
-      return result;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-      if(this == obj)
-        return true;
-      if(obj == null)
-        return false;
-      if(getClass() != obj.getClass())
-        return false;
-      Market other = (Market) obj;
-      if(broker == null)
-      {
-        if(other.broker != null)
-          return false;
-      } else if(!broker.equals(other.broker))
-        return false;
-      if(manual == null)
-      {
-        if(other.manual != null)
-          return false;
-      } else if(!manual.equals(other.manual))
-        return false;
-      if(order != other.order)
-        return false;
-      if(system != other.system)
-        return false;
-      if(transaction == null)
-      {
-        if(other.transaction != null)
-          return false;
-      } else if(!transaction.equals(other.transaction))
-        return false;
-      return true;
-    }
-
-    /**
-     * @author exter
-     * Market order type (sell orders, buy orders, manually priced)
-     */
-    public enum Order
-    {
-      // Market sell orders
-      SELL(0),
-      
-      // Market buy orders
-      BUY(1),
-
-      // Manual price
-      MANUAL(2);
-
-      public final int value;
-
-      Order(int v)
-      {
-        value = v;
-      }
-
-      static private Map<Integer, Order> intmap;
-
-      static public Order fromInt(int i)
-      {
-        if(intmap == null)
-        {
-          intmap = new HashMap<Integer, Order>();
-          for(Order v : values())
-          {
-            intmap.put(v.value, v);
-          }
-        }
-        return intmap.get(i);
-      }
-    }
-    
-    public enum MarketAction
-    {
-      BUY,
-      SELL,
-      UNKOWN
-    }
-
-    // ID of the solar system of the market.
-    public final int system;
-
-    // Order type.
-    public final Order order;
-    
-    // Manual price used in the case of Order.MANUAL
-    public final BigDecimal manual;
-    
-    // Broker fees.
-    public final BigDecimal broker;
-
-    // Transaction tax.
-    public final BigDecimal transaction;
-
-    public Market(int system, Order order, BigDecimal manual, BigDecimal broker,BigDecimal transaction)
-    {
-      this.system = system;
-      this.order = order;
-      this.manual = Utils.clamp(manual,BigDecimal.ZERO,null);
-      this.broker = Utils.clamp(broker,BigDecimal.ZERO,HOUNDRED);
-      this.transaction = Utils.clamp(transaction,BigDecimal.ZERO,HOUNDRED);
-    }
-
-    public Market(int system, Order order)
-    {
-      this(system,order,BigDecimal.ZERO,provider.getDefaultBrokerFee(),provider.getDefaultTransactionTax());
-    }
-
-    public Market(Market p)
-    {
-      system = p.system;
-      order = p.order;
-      manual = p.manual;
-      broker = p.broker;
-      transaction = p.transaction;
-    }
-
-    public Market()
-    {
-      this(getDataProvider().getDefaultSolarSystem(),Order.SELL);
-    }
-
-    public Market(TSLObject tsl)
-    {
-      system = tsl.getStringAsInt("system", getDataProvider().getDefaultSolarSystem());
-      order = Order.fromInt(tsl.getStringAsInt("order", tsl.getStringAsInt("source", Order.SELL.value)));
-      manual = Utils.clamp(tsl.getStringAsBigDecimal("manual", BigDecimal.ZERO),BigDecimal.ZERO,null);
-      broker = Utils.clamp(tsl.getStringAsBigDecimal("broker", provider.getDefaultBrokerFee()),BigDecimal.ZERO,HOUNDRED);
-      transaction = Utils.clamp(tsl.getStringAsBigDecimal("transaction", provider.getDefaultTransactionTax()),BigDecimal.ZERO,HOUNDRED);
-    }
-
-    public void writeToTSL(TSLObject tsl)
-    {
-      tsl.putString("system", system);
-      tsl.putString("order", order.value);
-      tsl.putString("manual", manual);
-      tsl.putString("broker", broker);
-      tsl.putString("transaction", transaction);
-    }
-
-  }
 
   /**
    * @author exter
@@ -204,7 +45,13 @@ public abstract class Task
      */
     public void onParameterChanged(Task task,int parameter);
   }
-
+  
+  public enum MarketAction
+  {
+    BUY,
+    SELL,
+    UNKNOWN
+  }
 
   private List<ITaskListener> task_listeners;
   private Map<Integer, Market> material_markets;
@@ -212,23 +59,12 @@ public abstract class Task
   private List<ItemStack> required_materials;
   private List<ItemStack> produced_materials;
   
-  // Used for loading/saving from/to TSL Objects.
-  static private Map<String, Class<? extends Task>> task_types;
-  static private Map<Class<? extends Task>, String> task_names;
+
   
   
-  static private IEVEDataProvider provider = null;
+  protected final TaskFactory factory;
   
   static private final BigDecimal PERCENT = new BigDecimal("0.01");
-  static private final BigDecimal HOUNDRED = new BigDecimal("100");
-  
-  /**
-   * Called when the task is being loaded from a TSL object.
-   * @param tsl TSL Object to load data from.
-   * @throws TaskLoadException When the task contains an invalid attribute
-   *  which invalidates the task (e.g. non-existent blueprints).
-   */
-  protected abstract void onLoadDataFromTSL(TSLObject tsl) throws TaskLoadException;
 
   /**
    * Called when updating materials
@@ -275,7 +111,6 @@ public abstract class Task
    */
   protected final void updateMaterials()
   {
-    IEVEDataProvider data = getDataProvider();
 
     produced_materials = new ArrayList<ItemStack>();
     required_materials = new ArrayList<ItemStack>();
@@ -285,13 +120,13 @@ public abstract class Task
     Map<Integer,Long> materials = new HashMap<Integer,Long>();
     for(ItemStack mat:getRawProducedMaterials())
     {
-      int id = mat.item.getID();
+      int id = mat.item_id.getID();
       long amount = Utils.mapGet(materials, id, 0L);
       materials.put(id, amount + mat.amount);
     }
     for(ItemStack mat:getRawRequiredMaterials())
     {
-      int id = mat.item.getID();
+      int id = mat.item_id.getID();
       long amount = Utils.mapGet(materials, id, 0L);
       materials.put(id, amount - mat.amount);
     }
@@ -303,18 +138,18 @@ public abstract class Task
       long amount = mat.getValue();
       if(amount > 0)
       {
-        produced_materials.add(new ItemStack(data.getItem(id), amount));
+        produced_materials.add(new ItemStack(factory.provider.getItem(id), amount));
         if(!material_markets.containsKey(id))
         {
-          material_markets.put(id, getDataProvider().getDefaultProducedMarket());
+          material_markets.put(id, factory.provider.getDefaultProducedMarket());
         }
       }
       if(amount < 0)
       {
-        required_materials.add(new ItemStack(data.getItem(id),-amount));
+        required_materials.add(new ItemStack(factory.provider.getItem(id),-amount));
         if(!material_markets.containsKey(id))
         {
-          material_markets.put(id, getDataProvider().getDefaultRequiredMarket());
+          material_markets.put(id, factory.provider.getDefaultRequiredMarket());
         }
       }
     }
@@ -355,60 +190,32 @@ public abstract class Task
     }
   }
 
-  protected Task()
+  Task(TaskFactory factory)
   {
-    if(provider == null)
-    {
-      throw new IllegalStateException("EVE Data provider not set.");
-    }
+    this.factory = factory;
     task_listeners = new ArrayList<ITaskListener>();
     material_markets = new HashMap<Integer, Market>();
   }
 
+  Task(TaskFactory factory,TSLObject tsl) throws TaskLoadException
+  {
+    this(factory);
+    for(TSLObject tsl_market : tsl.getObjectList("market"))
+    {
+      IItem i = factory.provider.getItem(tsl_market.getStringAsInt("item", -1));
+      if(i != null)
+      {
+        setMaterialMarket(i, new Market(tsl_market,factory.provider));
+      }
+    }
+  }
 
   /**
    * Load a task from a TSL Object.
    * @param tsl The TSL Object to load the task from.
    * @throws TaskLoadException If there was a fatal error loading the task.
    */
-  static public final Task loadPromTSL(TSLObject tsl) throws TaskLoadException
-  {
-    Task task = null;
-    try
-    {
-      String type = tsl.getString("type", null);
-      Class<? extends Task> clazz = task_types.get(type);
-      if(clazz == null)
-      {
-        throw new TaskLoadException();
-      }
-      IEVEDataProvider data = getDataProvider();
-      task = clazz.getDeclaredConstructor().newInstance();
-      for(TSLObject tsl_market : tsl.getObjectList("market"))
-      {
-        IItem i = data.getItem(tsl_market.getStringAsInt("item", -1));
-        if(i != null)
-        {
-          task.setMaterialMarket(i, new Market(tsl_market));
-        }
-      }
-      task.onLoadDataFromTSL(tsl);
-      task.updateMaterials();
-    } catch(InstantiationException e)
-    {
-      throw new TaskLoadException();
-    } catch(IllegalAccessException e)
-    {
-      throw new TaskLoadException();
-    } catch(InvocationTargetException e)
-    {
-      throw new TaskLoadException();
-    } catch(NoSuchMethodException e)
-    {
-      throw new TaskLoadException();
-    }
-    return task;
-  }
+
 
   /**
    * Get non-material extra expense (e.g. taxes, manufacturing cost, etc).
@@ -451,7 +258,12 @@ public abstract class Task
    */
   public void writeToTSL(TSLObject tsl)
   {
-    tsl.putString("type", task_names.get(getClass()));
+    String type = TaskFactory.getTaskName(getClass());
+    if(type == null)
+    {
+      throw new RuntimeException("Invalid task type");
+    }
+    tsl.putString("type", type);
     for(Map.Entry<Integer, Market> e : material_markets.entrySet())
     {
       TSLObject tsl_price = new TSLObject();
@@ -461,11 +273,6 @@ public abstract class Task
     }
   }
 
-  static private void registerTaskType(String name, Class<? extends Task> type)
-  {
-    task_types.put(name, type);
-    task_names.put(type, name);
-  }
 
   public final void registerListener(ITaskListener listener)
   {
@@ -508,7 +315,7 @@ public abstract class Task
    */
   public final BigDecimal getMaterialMarketPrice(ItemStack item)
   {
-    return getMaterialMarketPrice(item,MarketAction.UNKOWN);
+    return getMaterialMarketPrice(item,MarketAction.UNKNOWN);
   }
 
   /**
@@ -519,7 +326,7 @@ public abstract class Task
    */
   public final BigDecimal getMaterialMarketPrice(ItemStack item, MarketAction action)
   {
-    return getMaterialMarketPrice(item.item,action).multiply(new BigDecimal(item.amount));
+    return getMaterialMarketPrice(item.item_id,action).multiply(new BigDecimal(item.amount));
   }
 
   /**
@@ -528,7 +335,7 @@ public abstract class Task
    */
   public final BigDecimal getMaterialMarketPrice(IItem item)
   {
-    return getMaterialMarketPrice(item,MarketAction.UNKOWN);
+    return getMaterialMarketPrice(item,MarketAction.UNKNOWN);
   }
   
   /**
@@ -543,7 +350,7 @@ public abstract class Task
     {
       return BigDecimal.ZERO;
     }
-    BigDecimal price = getDataProvider().getMarketPrice(item, market);
+    BigDecimal price = factory.provider.getMarketPrice(item, market);
     BigDecimal tax = price.multiply(market.transaction.multiply(PERCENT));
     BigDecimal broker = price.multiply(market.broker.multiply(PERCENT));
     switch(action)
@@ -577,7 +384,7 @@ public abstract class Task
     {
       return BigDecimal.ZERO;
     }
-    return getDataProvider().getMarketPrice(item, market).multiply(market.broker.multiply(PERCENT));
+    return factory.provider.getMarketPrice(item, market).multiply(market.broker.multiply(PERCENT));
   }
 
   public final BigDecimal getMaterialTransactionTax(IItem item)
@@ -587,35 +394,6 @@ public abstract class Task
     {
       return BigDecimal.ZERO;
     }
-    return getDataProvider().getMarketPrice(item, market).multiply(market.transaction.multiply(PERCENT));
-  }
-
-  /**
-   * Get the current data provider.
-   */
-  static public final IEVEDataProvider getDataProvider()
-  {
-    return provider;
-  }
-
-  /**
-   * Set the data provider.
-   * This method must be called before creating any Task instance.
-   * @param prov Data provider implementation.
-   */
-  static public final void setDataProvider(IEVEDataProvider prov)
-  {
-    provider = prov;
-  }
-
-  static
-  {
-    task_types = new HashMap<String, Class<? extends Task>>();
-    task_names = new HashMap<Class<? extends Task>, String>();
-    registerTaskType("manufacturing", ManufacturingTask.class);
-    registerTaskType("refining", RefiningTask.class);
-    registerTaskType("reaction", ReactionTask.class);
-    registerTaskType("planet", PlanetTask.class);
-    registerTaskType("group", GroupTask.class);
+    return factory.provider.getMarketPrice(item, market).multiply(market.transaction.multiply(PERCENT));
   }
 }

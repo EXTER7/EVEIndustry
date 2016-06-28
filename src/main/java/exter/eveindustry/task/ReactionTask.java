@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import exter.eveindustry.data.IEVEDataProvider;
 import exter.eveindustry.data.reaction.IReaction;
 import exter.eveindustry.data.reaction.IStarbaseTower;
 import exter.eveindustry.item.ItemStack;
@@ -22,21 +21,41 @@ public final class ReactionTask extends Task
   private List<IReaction> reactions;
   private boolean sovereignty;
 
-  protected ReactionTask()
+  ReactionTask(TaskFactory factory,IStarbaseTower t)
   {
-    super();
-  }
-
-  public ReactionTask(IStarbaseTower t)
-  {
-    super();
+    super(factory);
     tower = t;
     reactions = new ArrayList<IReaction>();
     sovereignty = false;
     runtime = 1;
     updateMaterials();
   }
-  
+
+  ReactionTask(TaskFactory factory,TSLObject tsl) throws TaskLoadException
+  {
+    super(factory,tsl);
+    int tid = tsl.getStringAsInt("tower", -1);
+    tower = factory.provider.getStarbaseTower(tid);
+    if(tower == null)
+    {
+      throw new TaskLoadException("Starbase Tower with ID " + tid + " not found");
+    }
+    runtime = Utils.clamp(tsl.getStringAsInt("runtime",1),1,Integer.MAX_VALUE);
+    sovereignty = tsl.getStringAsInt("sovereignty",0) != 0;
+    
+    reactions = new ArrayList<IReaction>();
+    List<Integer> rval = tsl.getStringAsIntegerList("reaction");
+    for(int i:rval)
+    {
+      IReaction r = factory.provider.getReaction(i);
+      if(r != null)
+      {
+        reactions.add(r);
+      }
+    }
+    updateMaterials();
+  }
+
   protected List<ItemStack> getRawProducedMaterials()
   {
     int runs = runtime * 24;
@@ -144,35 +163,14 @@ public final class ReactionTask extends Task
     updateMaterials();
   }
 
-  public void addReaction(IReaction r)
+  public void addReaction(int reaction_id)
   {
-    reactions.add(r);
-    updateMaterials();
-  }
-
-  @Override
-  protected void onLoadDataFromTSL(TSLObject tsl) throws TaskLoadException
-  {
-    
-    IEVEDataProvider data = getDataProvider();
-    tower = data.getStarbaseTower(tsl.getStringAsInt("tower", -1));
-    if(tower == null)
+    IReaction reaction = factory.provider.getReaction(reaction_id);
+    if(reaction == null)
     {
-      throw new TaskLoadException();
+      return;
     }
-    runtime = Utils.clamp(tsl.getStringAsInt("runtime",1),1,Integer.MAX_VALUE);
-    sovereignty = tsl.getStringAsInt("sovereignty",0) != 0;
-    
-    reactions = new ArrayList<IReaction>();
-    List<Integer> rval = tsl.getStringAsIntegerList("reaction");
-    for(int i:rval)
-    {
-      IReaction r = data.getReaction(i);
-      if(r != null)
-      {
-        reactions.add(r);
-      }
-    }
+    reactions.add(reaction);
     updateMaterials();
   }
 

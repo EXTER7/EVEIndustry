@@ -64,15 +64,10 @@ public final class RefiningTask extends Task
   
   private IRefinable refinable;
 
-
-  protected RefiningTask()
+  RefiningTask(TaskFactory factory,IRefinable ref)
   {
-    super();
-  }
-
-  public RefiningTask(IRefinable ref)
-  {
-    IEVEDataProvider data = getDataProvider();
+    super(factory);
+    IEVEDataProvider data = factory.provider;
     refinable = ref;
     installation_efficiency = 50;
     hardwiring = Hardwiring.None;
@@ -83,7 +78,31 @@ public final class RefiningTask extends Task
     amount = ref.getRequiredItem().amount;
     updateMaterials();
   }
-  
+
+  RefiningTask(TaskFactory factory,TSLObject tsl) throws TaskLoadException
+  {
+    super(factory,tsl);
+    int id = tsl.getStringAsInt("refinable", -1);
+    refinable = factory.provider.getRefinable(id);
+    if(refinable == null)
+    {
+      throw new TaskLoadException("Refinable with ID " + id + " not found");
+    }
+    preprocessing_skill = Utils.clamp(tsl.getStringAsInt("refining_skill", 0),0,5);
+    repreff_skill = Utils.clamp(tsl.getStringAsInt("refeff_skill", 0),0,5);
+    processing_skill = Utils.clamp(tsl.getStringAsInt("processing_skill", 0),0,5);
+    hardwiring = Hardwiring.fromInt(tsl.getStringAsInt("hardwiring", 0));
+    installation_efficiency = Utils.clamp(tsl.getStringAsInt("station_efficiency", 50),35,100);
+    tax_percent = Utils.clamp(tsl.getStringAsFloat("tax_percent", 5),0,100);
+    long batch = refinable.getRequiredItem().amount;
+    amount = Utils.clamp(tsl.getStringAsLong("amount", batch),batch,Long.MAX_VALUE);
+    if(hardwiring == null)
+    {
+      hardwiring = Hardwiring.None;
+    }
+    updateMaterials();
+  }
+
   public int getReprocessingSkillLevel()
   {
     return preprocessing_skill;
@@ -185,28 +204,6 @@ public final class RefiningTask extends Task
   }
 
 
-  @Override
-  protected void onLoadDataFromTSL(TSLObject tsl) throws TaskLoadException
-  {
-    refinable = getDataProvider().getRefinable(tsl.getStringAsInt("refinable", -1));
-    if(refinable == null)
-    {
-      throw new TaskLoadException();
-    }
-    preprocessing_skill = Utils.clamp(tsl.getStringAsInt("refining_skill", 0),0,5);
-    repreff_skill = Utils.clamp(tsl.getStringAsInt("refeff_skill", 0),0,5);
-    processing_skill = Utils.clamp(tsl.getStringAsInt("processing_skill", 0),0,5);
-    hardwiring = Hardwiring.fromInt(tsl.getStringAsInt("hardwiring", 0));
-    installation_efficiency = Utils.clamp(tsl.getStringAsInt("station_efficiency", 50),35,100);
-    tax_percent = Utils.clamp(tsl.getStringAsFloat("tax_percent", 5),0,100);
-    long batch = refinable.getRequiredItem().amount;
-    amount = Utils.clamp(tsl.getStringAsLong("amount", batch),batch,Long.MAX_VALUE);
-    if(hardwiring == null)
-    {
-      hardwiring = Hardwiring.None;
-    }
-    updateMaterials();
-  }
   
   public IRefinable getRefinable()
   {
@@ -250,7 +247,7 @@ public final class RefiningTask extends Task
   {
     List<ItemStack> list = new ArrayList<ItemStack>();
     long b = refinable.getRequiredItem().amount;
-    list.add(new ItemStack(refinable.getRequiredItem().item,(amount / b) * b));
+    list.add(new ItemStack(refinable.getRequiredItem().item_id,(amount / b) * b));
     return list;
   }
 }

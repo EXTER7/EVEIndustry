@@ -63,7 +63,7 @@ public class Reaction implements IReaction
   {
     for(ItemStack m:Outputs)
     {
-      if(m.item.getID() == ID)
+      if(m.item_id.getID() == ID)
       {
         return m.amount;
       }

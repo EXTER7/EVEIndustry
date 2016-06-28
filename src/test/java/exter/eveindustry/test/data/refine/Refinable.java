@@ -43,7 +43,7 @@ public class Refinable implements IRefinable
   @Override
   public int getID()
   {
-    return RefineItem.item.getID();
+    return RefineItem.item_id.getID();
   }
 
   @Override

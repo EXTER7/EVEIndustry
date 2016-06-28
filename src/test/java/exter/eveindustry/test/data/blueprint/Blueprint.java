@@ -258,6 +258,6 @@ public class Blueprint implements IBlueprint
   @Override
   public int getID()
   {
-    return Product.item.getID();
+    return Product.item_id.getID();
   }
 }

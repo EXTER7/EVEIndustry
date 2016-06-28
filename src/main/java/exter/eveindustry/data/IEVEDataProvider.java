@@ -13,7 +13,7 @@ import exter.eveindustry.data.reaction.IReaction;
 import exter.eveindustry.data.reaction.IStarbaseTower;
 import exter.eveindustry.data.refinable.IRefinable;
 import exter.eveindustry.data.systemcost.ISolarSystemIndustryCost;
-import exter.eveindustry.task.Task;
+import exter.eveindustry.market.Market;
 
 /**
  * @author exter
@@ -109,7 +109,7 @@ public interface IEVEDataProvider
    * @param market The market in which to to look up the price.
    * @return The ISK price per unit of the item.
    */
-  public BigDecimal getMarketPrice(IItem item, Task.Market market);
+  public BigDecimal getMarketPrice(IItem item, Market market);
   
   /**
    * Get the ID of the "Industry" skill.
@@ -139,12 +139,12 @@ public interface IEVEDataProvider
   /**
    * Get the default market for produced items.
    */
-  public Task.Market getDefaultProducedMarket();
+  public Market getDefaultProducedMarket();
 
   /**
    * Get the default market for required items.
    */
-  public Task.Market getDefaultRequiredMarket();
+  public Market getDefaultRequiredMarket();
   
   /**
    * Get the default ME for a blueprint.

@@ -60,11 +60,41 @@ public final class GroupTask extends Task
   private int scale;
   private TaskMaterialChangeListener listener;
 
-  public GroupTask()
+  GroupTask(TaskFactory factory)
   {
+    super(factory);
     tasks = new HashMap<String,Task>();
     listener = new TaskMaterialChangeListener(this);
     scale = 1;
+    updateMaterials();
+  }
+
+  GroupTask(TaskFactory factory,TSLObject tsl) throws TaskLoadException
+  {
+    super(factory,tsl);
+    tasks.clear();
+    scale = Utils.clamp(tsl.getStringAsInt("scale", 1),1,Integer.MAX_VALUE);
+    List<TSLObject> task_list = tsl.getObjectList("task");
+    if(task_list != null)
+    {
+      for(TSLObject task_tsl:task_list)
+      {
+        String name = task_tsl.getString("name", null);
+        Task t;
+        try
+        {
+          t = factory.fromTSL(task_tsl);
+          if(t != null)
+          {
+            t.registerListener(listener);
+            tasks.put(name, t);
+          }
+        } catch(TaskLoadException e)
+        {
+          // Drop invalid tasks.
+        }
+      }
+    }
     updateMaterials();
   }
 
@@ -99,35 +129,6 @@ public final class GroupTask extends Task
     return list;
   }
 
-  @Override
-  protected void onLoadDataFromTSL(TSLObject tsl)
-  {
-    tasks.clear();
-    scale = Utils.clamp(tsl.getStringAsInt("scale", 1),1,Integer.MAX_VALUE);
-    List<TSLObject> task_list = tsl.getObjectList("task");
-    if(task_list != null)
-    {
-      for(TSLObject task_tsl:task_list)
-      {
-        String name = task_tsl.getString("name", null);
-        Task t;
-        try
-        {
-          t = Task.loadPromTSL(task_tsl);
-          if(t != null)
-          {
-            t.registerListener(listener);
-            tasks.put(name, t);
-          }
-        } catch(TaskLoadException e)
-        {
-          // Drop invalid tasks.
-        }
-      }
-    }
-    updateMaterials();
-  }
-  
   @Override
   public void writeToTSL(TSLObject tsl)
   {

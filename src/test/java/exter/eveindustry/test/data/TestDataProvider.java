@@ -14,7 +14,7 @@ import exter.eveindustry.data.reaction.IReaction;
 import exter.eveindustry.data.reaction.IStarbaseTower;
 import exter.eveindustry.data.refinable.IRefinable;
 import exter.eveindustry.data.systemcost.ISolarSystemIndustryCost;
-import exter.eveindustry.task.Task.Market;
+import exter.eveindustry.market.Market;
 import exter.eveindustry.test.data.blueprint.BlueprintDA;
 import exter.eveindustry.test.data.blueprint.InstallationDA;
 import exter.eveindustry.test.data.blueprint.InstallationGroup;
@@ -52,7 +52,7 @@ public class TestDataProvider implements IEVEDataProvider
   @Override
   public IInstallationGroup getDefaultInstallation(IBlueprint blueprint)
   {
-    for(InstallationGroup ig:InstallationDA.group_installations.get(blueprint.getProduct().item.getGroupID()))
+    for(InstallationGroup ig:InstallationDA.group_installations.get(blueprint.getProduct().item_id.getGroupID()))
     {
       if(ig.InstallationID == 6)
       {
@@ -184,13 +184,13 @@ public class TestDataProvider implements IEVEDataProvider
   @Override
   public Market getDefaultProducedMarket()
   {
-    return new Market();
+    return new Market(getDefaultSolarSystem(), Market.Order.SELL, BigDecimal.ZERO, getDefaultBrokerFee(), getDefaultTransactionTax());
   }
 
   @Override
   public Market getDefaultRequiredMarket()
   {
-    return new Market();
+    return new Market(getDefaultSolarSystem(), Market.Order.SELL, BigDecimal.ZERO, getDefaultBrokerFee(), getDefaultTransactionTax());
   }
 
   @Override

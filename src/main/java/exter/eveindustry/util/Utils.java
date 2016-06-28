@@ -73,6 +73,10 @@ public final class Utils
 
   static public BigDecimal clamp(BigDecimal v,BigDecimal min,BigDecimal max)
   {
+    if(v == null)
+    {
+      return null;
+    }
     if(min != null && v.compareTo(min) < 0)
     {
       return min;
