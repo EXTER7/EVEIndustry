@@ -1,0 +1,7 @@
+group [
+  id "329",
+  name "Armor Reinforcer",
+  cid "7",
+  icon "212",
+  blueprints "1"
+]

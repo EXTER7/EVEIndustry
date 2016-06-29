@@ -82,7 +82,7 @@ public final class ManufacturingTask extends Task
     {
       setAttempts(tsl.getStringAsInt("attempts",5));
       setInventionRuns(tsl.getStringAsInt("runs",1));
-      setDecryptor(factory.decryptors.get(tsl.getStringAsInt("decryptor", -1)));
+      setDecryptor(tsl.getStringAsInt("decryptor", -1));
       if(blueprint.invention.relics != null)
       {
         setInstallation(factory.invention_installations.get(tsl.getStringAsInt("installation", -1)));
@@ -138,9 +138,9 @@ public final class ManufacturingTask extends Task
       return decryptor;
     }
     
-    public void setDecryptor(Decryptor d)
+    public void setDecryptor(int decryptor_id)
     {
-      decryptor = d;
+      decryptor = factory.decryptors.get(decryptor_id);
       updateMaterials();
     }
     

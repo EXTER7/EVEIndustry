@@ -1,0 +1,9 @@
+item [
+  id "11695",
+  gid "334",
+  name "Plasma Pulse Generator",
+  vol "1.0",
+  icon "940",
+  market "1",
+  mg "1"
+]

@@ -1,0 +1,9 @@
+item [
+  id "2048",
+  gid "60",
+  name "Damage Control II",
+  vol "5.0",
+  icon "670",
+  market "1",
+  mg "2"
+]

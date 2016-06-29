@@ -1,0 +1,9 @@
+item [
+  id "20416",
+  gid "333",
+  name "Datacore - Nanite Engineering",
+  vol "0.1",
+  icon "1073",
+  market "1",
+  mg "1"
+]

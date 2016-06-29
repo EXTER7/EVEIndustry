@@ -1,0 +1,7 @@
+group [
+  id "1033",
+  name "Planet Liquid-Gas",
+  cid "42",
+  icon "710",
+  blueprints "0"
+]

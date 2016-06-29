@@ -1,0 +1,7 @@
+group [
+  id "334",
+  name "Construction Components",
+  cid "17",
+  icon "185",
+  blueprints "1"
+]

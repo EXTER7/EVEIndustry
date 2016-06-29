@@ -1,0 +1,26 @@
+blueprint [
+  id "2048",
+  amount "1",
+  time "2340",
+  installation "141282",
+  material [ id "11553", amount "1" ],
+  material [ id "11399", amount "1" ],
+  material [ id "3689", amount "5" ],
+  material [ id "11695", amount "1" ],
+  material [ id "11475", amount "1" ],
+  material [ id "3828", amount "3" ],
+  material [ id "11542", amount "1" ],
+  material [ id "11540", amount "1" ],
+  material [ id "2046", amount "1" ],
+  skill "11529",
+  invention [
+    time "13800",
+    chance "0.34",
+    runs "10",
+    eskill "23121",
+    dskill "11529",
+    dskill "11442",
+    material [ id "20416", amount "2" ],
+    material [ id "20415", amount "2" ]
+  ]
+]

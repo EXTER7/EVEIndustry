@@ -1,0 +1,7 @@
+group [
+  id "60",
+  name "Damage Control",
+  cid "7",
+  icon "668",
+  blueprints "1"
+]

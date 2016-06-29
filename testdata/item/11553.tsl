@@ -1,0 +1,9 @@
+item [
+  id "11553",
+  gid "334",
+  name "Oscillator Capacitor Unit",
+  vol "1.0",
+  icon "768",
+  market "1",
+  mg "1"
+]

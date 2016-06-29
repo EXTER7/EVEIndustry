@@ -653,15 +653,6 @@ tslfile.put_value("inv_inst_default",int(38))
 tslfile.put_value("relic_inv_inst_default",int(158))
 tslfile.end_collection()
 
-skills = [\
-   3380,  # Industry \
-   3385,  # Refining \
-   3388,  # Production Efficiency \
-   3389,  # Refinery Efficiency \
-   18025, # Ice Processing \
-   12196, # Scrapmetal Processing \
-]
-
 database.close()
 
 if "--no-zip" not in flags:

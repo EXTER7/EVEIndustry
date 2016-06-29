@@ -4,15 +4,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import exter.eveindustry.data.filesystem.DirectoryFileSystemHandler;
-import exter.eveindustry.data.item.Item;
 import exter.eveindustry.item.ItemStack;
-import exter.eveindustry.market.Market;
 import exter.eveindustry.task.ManufacturingTask;
 import exter.eveindustry.task.PlanetTask;
 import exter.eveindustry.task.ReactionTask;
@@ -33,6 +30,18 @@ public class EVEIndustryTest
     }
     return map;
   }
+  
+  @Test
+  public void testIndustryData()
+  {
+    Assert.assertEquals(3380,factory.indsutry_data.skill_industry);
+    Assert.assertEquals(3388,factory.indsutry_data.skill_advancedindustry);
+    Assert.assertEquals(3385,factory.indsutry_data.skill_reprocessing);
+    Assert.assertEquals(3389,factory.indsutry_data.skill_reprocessing_efficiency);
+    Assert.assertEquals(6,factory.indsutry_data.inst_default);
+    Assert.assertEquals(38,factory.indsutry_data.inv_inst_default);
+    Assert.assertEquals(158,factory.indsutry_data.relic_inv_inst_default);
+  }
 
   @Test
   public void testInventoryDA()
@@ -47,6 +56,8 @@ public class EVEIndustryTest
   public void testBlueprintDA()
   {
     Assert.assertNotEquals(null, factory.blueprints.get(178));
+    Assert.assertNotEquals(null, factory.blueprints.get(2046));
+    Assert.assertNotEquals(null, factory.blueprints.get(2048));
   }
 
   @Test
@@ -94,8 +105,7 @@ public class EVEIndustryTest
   @Test
   public void testStarmap()
   {
-    Assert.assertNotEquals(null, factory.dynamic_data.getSolarSystemIndustryCost(30000142));
-    Assert.assertNotEquals(null, factory.dynamic_data.getSolarSystemIndustryCost(30002798));
+    Assert.assertNotEquals(null, factory.solarsystems.get(30000142));
   }
 
 //  @Test
@@ -107,10 +117,9 @@ public class EVEIndustryTest
 //  }
 
   @Test
-  public void testManufacturingTask()
+  public void testManufacturingTaskMaterials()
   {
     ManufacturingTask task = factory.newManufacturing(178);
-    Assert.assertEquals(300,task.getProductionTime());
     Map<Integer,ItemStack> materials = mapMaterials(task.getRequiredMaterials());
     Assert.assertEquals(27,materials.get(34).amount);
     Assert.assertEquals(21,materials.get(35).amount);
@@ -124,6 +133,59 @@ public class EVEIndustryTest
     materials = mapMaterials(task.getRequiredMaterials());
     Assert.assertEquals(2700,materials.get(34).amount);
     Assert.assertEquals(2100,materials.get(35).amount);
+    task.setME(5);
+    Assert.assertEquals(3000,task.getProductionTime());
+    materials = mapMaterials(task.getRequiredMaterials());
+    Assert.assertEquals(2570,materials.get(34).amount);
+    Assert.assertEquals(2000,materials.get(35).amount);
+    task.setME(10);
+    Assert.assertEquals(3000,task.getProductionTime());
+    materials = mapMaterials(task.getRequiredMaterials());
+    Assert.assertEquals(2430,materials.get(34).amount);
+    Assert.assertEquals(1890,materials.get(35).amount);
+  }
+
+  @Test
+  public void testManufacturingTaskTime()
+  {
+    ManufacturingTask task = factory.newManufacturing(178);
+    Assert.assertEquals(300,task.getProductionTime());
+    task.setSkillLevel(factory.indsutry_data.skill_industry, 3);
+    Assert.assertEquals(264,task.getProductionTime());
+    task.setSkillLevel(factory.indsutry_data.skill_industry, 5);
+    Assert.assertEquals(240,task.getProductionTime());
+    task.setSkillLevel(factory.indsutry_data.skill_advancedindustry, 3);
+    Assert.assertEquals(219,task.getProductionTime());
+    task.setSkillLevel(factory.indsutry_data.skill_advancedindustry, 5);
+    Assert.assertEquals(205,task.getProductionTime());
+    task.setRuns(10);
+    Assert.assertEquals(2041,task.getProductionTime());
+    task.setTE(10);
+    Assert.assertEquals(1837,task.getProductionTime());
+    task.setTE(20);
+    Assert.assertEquals(1633,task.getProductionTime());
+  }
+
+  @Test
+  public void testManufacturingInvention()
+  {
+    ManufacturingTask task = factory.newManufacturing(2048);
+    task.getInvention().setAttempts(10);
+    task.getInvention().setInventionRuns(2);
+    Assert.assertEquals(2,task.getME());
+    Assert.assertEquals(4,task.getTE());
+    Assert.assertEquals(6,task.getCopies());
+    Assert.assertEquals(10,task.getRuns());
+    task.setSkillLevel(23121, 4);
+    task.setSkillLevel(11529, 4);
+    task.setSkillLevel(11442, 4);
+    Assert.assertEquals(9,task.getCopies());
+    Assert.assertEquals(10,task.getRuns());
+    task.getInvention().setDecryptor(34201);
+    Assert.assertEquals(11,task.getCopies());
+    Assert.assertEquals(11,task.getRuns());
+    Assert.assertEquals(4,task.getME());
+    Assert.assertEquals(14,task.getTE());
   }
 
   @Test

@@ -1,0 +1,10 @@
+industrydata [
+  build_time "1467225686",
+  skill_industry "3380",
+  skill_advancedindustry "3388",
+  skill_reprocessing "3385",
+  skill_reprocessing_efficiency "3389",
+  inst_default "6",
+  inv_inst_default "38",
+  relic_inv_inst_default "158"
+]

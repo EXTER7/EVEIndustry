@@ -1,0 +1,7 @@
+group [
+  id "270",
+  name "Science",
+  cid "16",
+  icon "177",
+  blueprints "0"
+]

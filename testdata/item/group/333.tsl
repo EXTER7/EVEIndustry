@@ -1,0 +1,7 @@
+group [
+  id "333",
+  name "Datacores",
+  cid "17",
+  icon "493",
+  blueprints "0"
+]

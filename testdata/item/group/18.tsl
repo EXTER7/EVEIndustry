@@ -1,0 +1,7 @@
+group [
+  id "18",
+  name "Mineral",
+  cid "4",
+  icon "9",
+  blueprints "0"
+]
