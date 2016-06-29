@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import exter.eveindustry.data.IDynamicDataProvider;
+import exter.eveindustry.data.IndustryData;
 import exter.eveindustry.data.blueprint.Blueprint;
 import exter.eveindustry.data.blueprint.Installation;
 import exter.eveindustry.data.blueprint.InstallationGroup;
@@ -44,6 +45,7 @@ public final class TaskFactory
   public final StarbaseTower.Data towers;
   public final SolarSystem.Data solarsystems;
   public final Region.Data regions;
+  public final IndustryData indsutry_data;
   public final IDynamicDataProvider dynamic_data;
   
   // Used for loading/saving from/to TSL Objects.
@@ -68,8 +70,9 @@ public final class TaskFactory
     towers = new StarbaseTower.Data(fs,items);
     solarsystems = new SolarSystem.Data(fs);
     regions = new Region.Data(fs);
+    indsutry_data = fs.readFile("eid.tsl", new IndustryData.Reader());
     this.dynamic_data = dynamic_data;
-  }  
+  }
 
   /**
    * Load a task from a TSL Object.

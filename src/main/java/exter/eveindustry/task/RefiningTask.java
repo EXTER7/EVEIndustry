@@ -69,8 +69,8 @@ public final class RefiningTask extends Task
     refinable = ref;
     installation_efficiency = 50;
     hardwiring = Hardwiring.None;
-    reprocessing_skill = factory.dynamic_data.getDefaultSkillLevel(3385);
-    repreff_skill = factory.dynamic_data.getDefaultSkillLevel(3389);
+    reprocessing_skill = factory.dynamic_data.getDefaultSkillLevel(factory.indsutry_data.skill_reprocessing);
+    repreff_skill = factory.dynamic_data.getDefaultSkillLevel(factory.indsutry_data.skill_reprocessing_efficiency);
     processing_skill = factory.dynamic_data.getDefaultSkillLevel(refinable.skill_id);
     tax_percent = 5;
     amount = ref.item.amount;

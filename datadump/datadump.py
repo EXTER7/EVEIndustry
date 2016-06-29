@@ -13,6 +13,7 @@ import zipfile
 import shutil
 import bz2
 import sqlite3
+import time
 
 from evedump.item import *
 from evedump.blueprint import *
@@ -493,7 +494,7 @@ reaction_index.write_to_file("eid/reaction/index.tsl")
 moon_index.sort_entries(lambda entry: inventory.get_item(entry.item).name)
 moon_index.write_to_file("eid/reaction/index_moon.tsl")
 
-tslfile = TSLWriter("eid/starbases.tsl")
+tslfile = TSLWriter("eid/reaction/starbases.tsl")
 tslfile.start_collection("starbases")
 for sb in Starbase.get_starbases(dbc):
   tower = inventory.get_item(sb.sbid)
@@ -638,6 +639,28 @@ for i in metagroups:
   tslfile.put_value("id",int(i))
   tslfile.put_value("name",m.name)
   tslfile.end_collection()
+
+
+tslfile = TSLWriter("eid/eid.tsl")
+tslfile.start_collection("industrydata")
+tslfile.put_value("build_time",int(time.time()))
+tslfile.put_value("skill_industry",int(3380))
+tslfile.put_value("skill_advancedindustry",int(3388))
+tslfile.put_value("skill_reprocessing",int(3385))
+tslfile.put_value("skill_reprocessing_efficiency",int(3389))
+tslfile.put_value("inst_default",int(6))
+tslfile.put_value("inv_inst_default",int(38))
+tslfile.put_value("relic_inv_inst_default",int(158))
+tslfile.end_collection()
+
+skills = [\
+   3380,  # Industry \
+   3385,  # Refining \
+   3388,  # Production Efficiency \
+   3389,  # Refinery Efficiency \
+   18025, # Ice Processing \
+   12196, # Scrapmetal Processing \
+]
 
 database.close()
 

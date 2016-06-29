@@ -74,7 +74,7 @@ public final class ManufacturingTask extends Task
       attempts = 5;
       invruns = 1;
       
-      installation = factory.invention_installations.get(blueprint.invention.relics != null?158:38);
+      installation = getDefaultInstallation();
       relic = blueprint.invention.default_relic;
     }
        
@@ -211,13 +211,19 @@ public final class ManufacturingTask extends Task
       boolean rel = blueprint.invention.relics != null;
       if(installation == null || installation.relics != rel)
       {
-        installation = factory.invention_installations.get(blueprint.invention.relics != null?158:38);
+        installation = getDefaultInstallation();
       }
+    }
+    
+    private InventionInstallation getDefaultInstallation()
+    {
+      return factory.invention_installations.get(
+          blueprint.invention.relics != null?factory.indsutry_data.relic_inv_inst_default:factory.indsutry_data.inv_inst_default);
     }
     
     public int getInventionTime()
     {
-      int advindustry_skill = skills.get(3380);
+      int advindustry_skill = skills.get(factory.indsutry_data.skill_industry);
       return (int) Math.ceil(invruns * blueprint.invention.time * installation.time * (1.0 - 0.03 * advindustry_skill));
     }
     
@@ -354,8 +360,8 @@ public final class ManufacturingTask extends Task
   public int getProductionTime()
   {
     double eff_time;
-    int industry_skill = skills.get(3380);
-    int advindustry_skill = skills.get(3388);
+    int industry_skill = skills.get(factory.indsutry_data.skill_industry);
+    int advindustry_skill = skills.get(factory.indsutry_data.skill_advancedindustry);
 
     eff_time = (double) blueprint.manufacture_time * installation.time * (1 - (double)getTE() / 100.0) * getRuns();
     eff_time *= (1.0 - 0.04 * industry_skill) * (1.0 - hardwiring.bonus) * (1.0 - advindustry_skill * 0.03);
@@ -653,11 +659,10 @@ public final class ManufacturingTask extends Task
   
   //update the list of relevant skills
   private void updateSkills()
-  {
-    
+  {    
     Map<Integer,Integer> newskills = new HashMap<Integer,Integer>();
-    newskills.put(3380, factory.dynamic_data.getDefaultSkillLevel(3380));
-    newskills.put(3388, factory.dynamic_data.getDefaultSkillLevel(3388));
+    newskills.put(factory.indsutry_data.skill_industry, factory.dynamic_data.getDefaultSkillLevel(factory.indsutry_data.skill_industry));
+    newskills.put(factory.indsutry_data.skill_advancedindustry, factory.dynamic_data.getDefaultSkillLevel(factory.indsutry_data.skill_advancedindustry));
     for(int s:blueprint.skills)
     {
       newskills.put(s, factory.dynamic_data.getDefaultSkillLevel(s));
