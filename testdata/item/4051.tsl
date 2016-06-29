@@ -1,0 +1,9 @@
+item [
+  id "4051",
+  gid "1136",
+  name "Nitrogen Fuel Block",
+  vol "5.0",
+  icon "1076",
+  market "1",
+  mg "1"
+]

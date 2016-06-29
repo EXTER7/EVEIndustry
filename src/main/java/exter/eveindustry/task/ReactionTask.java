@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import exter.eveindustry.data.reaction.IReaction;
-import exter.eveindustry.data.reaction.IStarbaseTower;
+import exter.eveindustry.data.reaction.Reaction;
+import exter.eveindustry.data.reaction.StarbaseTower;
 import exter.eveindustry.item.ItemStack;
 import exter.eveindustry.util.Utils;
 import exter.tsl.TSLObject;
@@ -17,15 +17,15 @@ import exter.tsl.TSLObject;
 public final class ReactionTask extends Task
 {
   private int runtime;
-  private IStarbaseTower tower;
-  private List<IReaction> reactions;
+  private StarbaseTower tower;
+  private List<Reaction> reactions;
   private boolean sovereignty;
 
-  ReactionTask(TaskFactory factory,IStarbaseTower t)
+  ReactionTask(TaskFactory factory,StarbaseTower t)
   {
     super(factory);
     tower = t;
-    reactions = new ArrayList<IReaction>();
+    reactions = new ArrayList<Reaction>();
     sovereignty = false;
     runtime = 1;
     updateMaterials();
@@ -35,7 +35,7 @@ public final class ReactionTask extends Task
   {
     super(factory,tsl);
     int tid = tsl.getStringAsInt("tower", -1);
-    tower = factory.static_data.getStarbaseTower(tid);
+    tower = factory.towers.get(tid);
     if(tower == null)
     {
       throw new TaskLoadException("Starbase Tower with ID " + tid + " not found");
@@ -43,11 +43,11 @@ public final class ReactionTask extends Task
     runtime = Utils.clamp(tsl.getStringAsInt("runtime",1),1,Integer.MAX_VALUE);
     sovereignty = tsl.getStringAsInt("sovereignty",0) != 0;
     
-    reactions = new ArrayList<IReaction>();
+    reactions = new ArrayList<Reaction>();
     List<Integer> rval = tsl.getStringAsIntegerList("reaction");
     for(int i:rval)
     {
-      IReaction r = factory.static_data.getReaction(i);
+      Reaction r = factory.reactions.get(i);
       if(r != null)
       {
         reactions.add(r);
@@ -60,11 +60,11 @@ public final class ReactionTask extends Task
   {
     int runs = runtime * 24;
     List<ItemStack> list = new ArrayList<ItemStack>();
-    for(IReaction r : reactions)
+    for(Reaction r : reactions)
     {
       if(r != null)
       {
-        for(ItemStack mat:r.getOutputs())
+        for(ItemStack mat:r.outputs)
         {
           list.add(mat.scaled(runs));
         }
@@ -77,11 +77,11 @@ public final class ReactionTask extends Task
   {
     List<ItemStack> list = new ArrayList<ItemStack>();
     int runs = runtime * 24;
-    for(IReaction r:reactions)
+    for(Reaction r:reactions)
     {
       if(r != null)
       {
-        for(ItemStack mat:r.getInputs())
+        for(ItemStack mat:r.inputs)
         {
           list.add(mat.scaled(runs));
         }
@@ -93,7 +93,7 @@ public final class ReactionTask extends Task
 
   private ItemStack getFuelUsed()
   {
-    ItemStack fuel = tower.getRequiredFuel().scaled(runtime * 24);
+    ItemStack fuel = tower.fuel.scaled(runtime * 24);
     if(sovereignty)
     {
       return fuel.scaledFloor(0.75);
@@ -118,12 +118,12 @@ public final class ReactionTask extends Task
     updateMaterials();
   }
 
-  public IStarbaseTower getStarbaseTower()
+  public StarbaseTower getStarbaseTower()
   {
     return tower;
   }
 
-  public void setStarbaseTower(IStarbaseTower value)
+  public void setStarbaseTower(StarbaseTower value)
   {
     tower = value;
     updateMaterials();
@@ -146,7 +146,7 @@ public final class ReactionTask extends Task
     updateMaterials();
   }
   
-  public List<IReaction> getReactions()
+  public List<Reaction> getReactions()
   {
     return Collections.unmodifiableList(reactions);
   }
@@ -157,7 +157,7 @@ public final class ReactionTask extends Task
     updateMaterials();
   }
   
-  public void removeReaction(IReaction reaction)
+  public void removeReaction(Reaction reaction)
   {
     reactions.remove(reaction);
     updateMaterials();
@@ -165,7 +165,7 @@ public final class ReactionTask extends Task
 
   public void addReaction(int reaction_id)
   {
-    IReaction reaction = factory.static_data.getReaction(reaction_id);
+    Reaction reaction = factory.reactions.get(reaction_id);
     if(reaction == null)
     {
       return;
@@ -179,14 +179,14 @@ public final class ReactionTask extends Task
   {
     super.writeToTSL(tsl);
 
-    tsl.putString("tower", tower.getID());
+    tsl.putString("tower", tower.item.id);
     tsl.putString("runtime", runtime);
     tsl.putString("sovereignty", sovereignty?1:0);
-    for(IReaction r:reactions)
+    for(Reaction r:reactions)
     {
       if(r != null)
       {
-        tsl.putString("reaction", r.getID());
+        tsl.putString("reaction", r.id);
       }
     }
   }

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import exter.eveindustry.data.planet.IPlanet;
-import exter.eveindustry.data.planet.IPlanetBuilding;
+import exter.eveindustry.data.planet.Planet;
+import exter.eveindustry.data.planet.PlanetBuilding;
 import exter.eveindustry.item.ItemStack;
 import exter.eveindustry.util.Utils;
 import exter.tsl.TSLObject;
@@ -18,17 +18,17 @@ import exter.tsl.TSLObject;
 public final class PlanetTask extends Task
 {
   private int runtime;
-  private IPlanet planet;
+  private Planet planet;
   private float tax_percent;
-  private List<IPlanetBuilding> buildings;
+  private List<PlanetBuilding> buildings;
 
   static private final int PARAMETER_BUILDINGS = 0;
 
-  PlanetTask(TaskFactory factory,IPlanet p)
+  PlanetTask(TaskFactory factory,Planet p)
   {
     super(factory);
     planet = p;
-    buildings = new ArrayList<IPlanetBuilding>();
+    buildings = new ArrayList<PlanetBuilding>();
     tax_percent = 15;
     runtime = 1;
     updateMaterials();
@@ -38,7 +38,7 @@ public final class PlanetTask extends Task
   {
     super(factory,tsl);
     int pid = tsl.getStringAsInt("planet", -1);
-    planet = factory.static_data.getPlanet(pid);
+    planet = factory.planets.get(pid);
     if(planet == null)
     {
       throw new TaskLoadException("Planet with ID " + pid + " not found");
@@ -46,11 +46,11 @@ public final class PlanetTask extends Task
     tax_percent = Utils.clamp(tsl.getStringAsFloat("tax", 15),0,100);
     runtime = Utils.clamp(tsl.getStringAsInt("runtime",1),1,Integer.MAX_VALUE);
     
-    buildings = new ArrayList<IPlanetBuilding>();
+    buildings = new ArrayList<PlanetBuilding>();
     for(int id:tsl.getStringAsIntegerList("building"))
     {
-      IPlanetBuilding p = factory.static_data.getPlanetBuilding(id);
-      if(p != null && (p.getMaterials().size() > 0 || planet.getResources().contains(p.getProduct().item_id)))
+      PlanetBuilding p = factory.planetbuildings.get(id);
+      if(p != null && (p.materials.size() > 0 || planet.resources.contains(p.product.item)))
       {
         buildings.add(p);
       }
@@ -62,9 +62,9 @@ public final class PlanetTask extends Task
   {
     int runs = runtime * 24;
     List<ItemStack> prods = new ArrayList<ItemStack>();
-    for(IPlanetBuilding b : buildings)
+    for(PlanetBuilding b : buildings)
     {
-      ItemStack p = b.getProduct();
+      ItemStack p = b.product;
       prods.add(p.scaled(runs));
     }
     return prods;
@@ -74,11 +74,11 @@ public final class PlanetTask extends Task
   {
     List<ItemStack> materials = new ArrayList<ItemStack>();
     int runs = runtime * 24;
-    for(IPlanetBuilding b : buildings)
+    for(PlanetBuilding b : buildings)
     {
       if(b != null)
       {
-        for(ItemStack mat:b.getMaterials())
+        for(ItemStack mat:b.materials)
         {
           materials.add(mat.scaled(runs));
         }
@@ -105,28 +105,28 @@ public final class PlanetTask extends Task
     updateMaterials();
   }
 
-  public IPlanet getPlanet()
+  public Planet getPlanet()
   {
     return planet;
   }
 
-  public void setPlanet(IPlanet value)
+  public void setPlanet(Planet value)
   {
     planet = value;
     int i;
     boolean removed = false;
     for(i = buildings.size() - 1; i >= 0; i--)
     {
-      IPlanetBuilding p = buildings.get(i);
-      if(p.getMaterials().size() == 0)
+      PlanetBuilding p = buildings.get(i);
+      if(p.materials.size() == 0)
       {
-        if(!planet.getResources().contains(p.getProduct().item_id))
+        if(!planet.resources.contains(p.product.item))
         {
           buildings.remove(i);
           removed = true;
         }
       }
-      if(p.getLevel() == 4 && !planet.isAdvanced())
+      if(p.level == 4 && !planet.advanced)
       {
         buildings.remove(i);
         removed = true;
@@ -139,23 +139,23 @@ public final class PlanetTask extends Task
     updateMaterials();
   }
   
-  public List<IPlanetBuilding> getBuildings()
+  public List<PlanetBuilding> getBuildings()
   {
     return Collections.unmodifiableList(buildings);
   }
 
   public void addBuilding(int building_id)
   {
-    IPlanetBuilding building = factory.static_data.getPlanetBuilding(building_id);
+    PlanetBuilding building = factory.planetbuildings.get(building_id);
     if(building == null)
     {
       return;
     }
-    if(building.getMaterials().size() == 0 && !planet.getResources().contains(building.getProduct().item_id))
+    if(building.materials.size() == 0 && !planet.resources.contains(building.product.item))
     {
       return;
     }
-    if(building.getLevel() == 4 && !planet.isAdvanced())
+    if(building.level == 4 && !planet.advanced)
     {
       return;
     }
@@ -169,7 +169,7 @@ public final class PlanetTask extends Task
     updateMaterials();
   }
   
-  public void removeBuilding(IPlanetBuilding building)
+  public void removeBuilding(PlanetBuilding building)
   {
     buildings.remove(building);
     updateMaterials();
@@ -181,14 +181,14 @@ public final class PlanetTask extends Task
   {
     super.writeToTSL(tsl);
 
-    tsl.putString("planet", planet.getID());
+    tsl.putString("planet", planet.id);
     tsl.putString("tax", tax_percent);
     tsl.putString("runtime", runtime);
-    for(IPlanetBuilding p:buildings)
+    for(PlanetBuilding p:buildings)
     {
       if(p != null)
       {
-        tsl.putString("building", p.getID());
+        tsl.putString("building", p.product.item.id);
       }
     }
   }
@@ -200,13 +200,13 @@ public final class PlanetTask extends Task
     
     for(ItemStack m:getProducedMaterials())
     {
-      IPlanetBuilding p = factory.static_data.getPlanetBuilding(m.item_id);
-      expense = expense.add(new BigDecimal((double)(p.getCustomsOfficeTax() * m.amount) * (tax_percent / 100)));
+      PlanetBuilding p = factory.planetbuildings.get(m.item.id);
+      expense = expense.add(new BigDecimal((double)(p.tax * m.amount) * (tax_percent / 100)));
     }
     for(ItemStack m:getRequiredMaterials())
     {
-      IPlanetBuilding p = factory.static_data.getPlanetBuilding(m.item_id);
-      expense = expense.add(new BigDecimal((double)(p.getCustomsOfficeTax() * m.amount) * 0.5 * (tax_percent / 100)));
+      PlanetBuilding p = factory.planetbuildings.get(m.item.id);
+      expense = expense.add(new BigDecimal((double)(p.tax * m.amount) * 0.5 * (tax_percent / 100)));
     }
     return expense;
   }

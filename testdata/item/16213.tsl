@@ -1,0 +1,9 @@
+item [
+  id "16213",
+  gid "365",
+  name "Caldari Control Tower",
+  vol "8000.0",
+  icon "964",
+  market "1",
+  mg "1"
+]

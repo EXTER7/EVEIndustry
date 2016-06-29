@@ -1,0 +1,7 @@
+group [
+  id "83",
+  name "Projectile Ammo",
+  cid "8",
+  icon "53",
+  blueprints "1"
+]

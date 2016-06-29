@@ -1,0 +1,9 @@
+item [
+  id "34",
+  gid "18",
+  name "Tritanium",
+  vol "0.01",
+  icon "9",
+  market "1",
+  mg "1"
+]

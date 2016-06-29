@@ -1,0 +1,7 @@
+group [
+  id "1136",
+  name "Fuel Block",
+  cid "4",
+  icon "1076",
+  blueprints "1"
+]

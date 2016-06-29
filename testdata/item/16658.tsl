@@ -1,0 +1,9 @@
+item [
+  id "16658",
+  gid "428",
+  name "Silicon Diborite",
+  vol "1.0",
+  icon "21",
+  market "1",
+  mg "1"
+]

@@ -1,0 +1,7 @@
+group [
+  id "7",
+  name "Planet",
+  cid "2",
+  icon "1",
+  blueprints "0"
+]

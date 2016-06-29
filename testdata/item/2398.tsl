@@ -1,0 +1,9 @@
+item [
+  id "2398",
+  gid "1042",
+  name "Reactive Metals",
+  vol "0.38",
+  icon "1383",
+  market "1",
+  mg "1"
+]

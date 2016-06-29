@@ -1,0 +1,9 @@
+item [
+  id "34201",
+  gid "1304",
+  name "Accelerant Decryptor",
+  vol "0.1",
+  icon "183",
+  market "1",
+  mg "1"
+]

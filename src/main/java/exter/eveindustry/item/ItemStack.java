@@ -1,6 +1,6 @@
 package exter.eveindustry.item;
 
-import exter.eveindustry.data.inventory.IItem;
+import exter.eveindustry.data.item.Item;
 
 /**
  * @author exter
@@ -11,7 +11,7 @@ public final class ItemStack
   /**
    * Item of the stack
    */
-  public final IItem item_id;
+  public final Item item;
   
   /**
    * Amount of units of the item the stack.
@@ -23,7 +23,7 @@ public final class ItemStack
    * @param aAmount Amount of units in the stack.
    * @throws IllegalArgumentException If the item is null or the amount is < 1.
    */
-  public ItemStack(IItem item,long amount)
+  public ItemStack(Item item,long amount)
   {
     if(item == null)
     {
@@ -33,7 +33,7 @@ public final class ItemStack
     {
       throw new IllegalArgumentException("Amount must be a positive integer.");
     }
-    this.item_id = item;
+    this.item = item;
     this.amount = amount; 
   }
   
@@ -43,7 +43,7 @@ public final class ItemStack
     final int prime = 31;
     int result = 1;
     result = prime * result + (int) (amount ^ (amount >>> 32));
-    result = prime * result + ((item_id == null) ? 0 : item_id.getID());
+    result = prime * result + ((item == null) ? 0 : item.id);
     return result;
   }
 
@@ -67,13 +67,13 @@ public final class ItemStack
     {
       return false;
     }
-    if(item_id == null)
+    if(item == null)
     {
-      if(other.item_id != null)
+      if(other.item != null)
       {
         return false;
       }
-    } else if(item_id.getID() != (other.item_id.getID()))
+    } else if(item.id != (other.item.id))
     {
       return false;
     }
@@ -92,7 +92,7 @@ public final class ItemStack
     {
       throw new IllegalArgumentException("scale must be a positive integer.");
     }
-    return new ItemStack(item_id,amount * scale);
+    return new ItemStack(item,amount * scale);
   }
 
   /**
@@ -107,7 +107,7 @@ public final class ItemStack
     {
       throw new IllegalArgumentException("scale must be a positive integer.");
     }
-    return new ItemStack(item_id,amount * scale);
+    return new ItemStack(item,amount * scale);
   }
 
   /**
@@ -127,7 +127,7 @@ public final class ItemStack
     {
       return null;
     }
-    return new ItemStack(item_id,scaled);
+    return new ItemStack(item,scaled);
   }
 
   /**
@@ -142,7 +142,7 @@ public final class ItemStack
     {
       throw new IllegalArgumentException("scale must be a positive integer.");
     }
-    return new ItemStack(item_id,(long)Math.ceil((amount * scale)));
+    return new ItemStack(item,(long)Math.ceil((amount * scale)));
   }
 
   /**
@@ -162,6 +162,6 @@ public final class ItemStack
     {
       return null;
     }
-    return new ItemStack(item_id,scaled);
+    return new ItemStack(item,scaled);
   }
 }

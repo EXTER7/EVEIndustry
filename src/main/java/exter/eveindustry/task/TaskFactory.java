@@ -5,11 +5,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import exter.eveindustry.data.IDynamicDataProvider;
-import exter.eveindustry.data.IStaticDataProvider;
-import exter.eveindustry.data.blueprint.IBlueprint;
-import exter.eveindustry.data.planet.IPlanet;
-import exter.eveindustry.data.reaction.IStarbaseTower;
-import exter.eveindustry.data.refinable.IRefinable;
+import exter.eveindustry.data.blueprint.Blueprint;
+import exter.eveindustry.data.blueprint.Installation;
+import exter.eveindustry.data.blueprint.InstallationGroup;
+import exter.eveindustry.data.blueprint.InventionInstallation;
+import exter.eveindustry.data.decryptor.Decryptor;
+import exter.eveindustry.data.filesystem.IFileSystemHandler;
+import exter.eveindustry.data.item.Item;
+import exter.eveindustry.data.item.ItemCategory;
+import exter.eveindustry.data.item.ItemGroup;
+import exter.eveindustry.data.planet.Planet;
+import exter.eveindustry.data.planet.PlanetBuilding;
+import exter.eveindustry.data.reaction.Reaction;
+import exter.eveindustry.data.reaction.StarbaseTower;
+import exter.eveindustry.data.refine.Refinable;
+import exter.eveindustry.data.starmap.Region;
+import exter.eveindustry.data.starmap.SolarSystem;
 import exter.tsl.TSLObject;
 
 /**
@@ -18,7 +29,21 @@ import exter.tsl.TSLObject;
  */
 public final class TaskFactory
 {
-  public final IStaticDataProvider static_data;
+  public final Item.Data items;
+  public final ItemGroup.Data item_groups;
+  public final ItemCategory.Data item_categories;
+  public final Blueprint.Data blueprints;
+  public final Installation.Data installations;
+  public final InstallationGroup.Data installation_groups;
+  public final InventionInstallation.Data invention_installations;
+  public final Decryptor.Data decryptors;
+  public final PlanetBuilding.Data planetbuildings;
+  public final Planet.Data planets;
+  public final Reaction.Data reactions;
+  public final Refinable.Data refinables;
+  public final StarbaseTower.Data towers;
+  public final SolarSystem.Data solarsystems;
+  public final Region.Data regions;
   public final IDynamicDataProvider dynamic_data;
   
   // Used for loading/saving from/to TSL Objects.
@@ -26,12 +51,26 @@ public final class TaskFactory
   static private Map<Class<? extends Task>, String> task_names;
   
   
-  public TaskFactory(IStaticDataProvider static_data,IDynamicDataProvider dynamic_data)
+  public TaskFactory(IFileSystemHandler fs,IDynamicDataProvider dynamic_data)
   {
-    this.static_data = static_data;
+    items = new Item.Data(fs);
+    item_groups = new ItemGroup.Data(fs);
+    item_categories = new ItemCategory.Data(fs);
+    installations = new Installation.Data(fs);
+    installation_groups = new InstallationGroup.Data(fs);
+    invention_installations = new InventionInstallation.Data(fs);
+    blueprints = new Blueprint.Data(fs,items,installation_groups);
+    decryptors = new Decryptor.Data(fs,items);
+    planetbuildings = new PlanetBuilding.Data(fs,items);
+    planets = new Planet.Data(fs,items);
+    reactions = new Reaction.Data(fs,items);
+    refinables = new Refinable.Data(fs,items);
+    towers = new StarbaseTower.Data(fs,items);
+    solarsystems = new SolarSystem.Data(fs);
+    regions = new Region.Data(fs);
     this.dynamic_data = dynamic_data;
-  }
-  
+  }  
+
   /**
    * Load a task from a TSL Object.
    * @param tsl The TSL Object to load the task from.
@@ -52,7 +91,7 @@ public final class TaskFactory
       {
         throw new TaskLoadException("Invalid task type: " + type);
       }
-      task = clazz.getDeclaredConstructor(TaskFactory.class,TSLObject.class).newInstance(this,static_data);
+      task = clazz.getDeclaredConstructor(TaskFactory.class,TSLObject.class).newInstance(this,tsl);
     } catch(InstantiationException e)
     {
       throw new RuntimeException(e);
@@ -88,7 +127,7 @@ public final class TaskFactory
    */
   public ManufacturingTask newManufacturing(int blueprint_id)
   {
-    IBlueprint bp = static_data.getBlueprint(blueprint_id);
+    Blueprint bp = blueprints.get(blueprint_id);
     if(bp == null)
     {
       return null;
@@ -103,7 +142,7 @@ public final class TaskFactory
    */
   public RefiningTask newRefining(int refinable_id)
   {
-    IRefinable ref = static_data.getRefinable(refinable_id);
+    Refinable ref = refinables.get(refinable_id);
     if(ref == null)
     {
       return null;
@@ -118,7 +157,7 @@ public final class TaskFactory
    */
   public ReactionTask newReaction(int tower_id)
   {
-    IStarbaseTower tower = static_data.getStarbaseTower(tower_id);
+    StarbaseTower tower = towers.get(tower_id);
     if(tower == null)
     {
       return null;
@@ -133,7 +172,7 @@ public final class TaskFactory
    */
   public PlanetTask newPlanet(int planet_id)
   {
-    IPlanet planet = static_data.getPlanet(planet_id);
+    Planet planet = planets.get(planet_id);
     if(planet == null)
     {
       return null;

@@ -1,0 +1,9 @@
+item [
+  id "2307",
+  gid "1032",
+  name "Felsic Magma",
+  vol "0.01",
+  icon "725",
+  market "1",
+  mg "1"
+]

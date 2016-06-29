@@ -1,0 +1,9 @@
+item [
+  id "16671",
+  gid "429",
+  name "Titanium Carbide",
+  vol "0.01",
+  icon "127",
+  market "1",
+  mg "1"
+]

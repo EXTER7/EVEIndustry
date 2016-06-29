@@ -1,0 +1,9 @@
+item [
+  id "2306",
+  gid "1032",
+  name "Non-CS Crystals",
+  vol "0.01",
+  icon "724",
+  market "1",
+  mg "1"
+]

@@ -1,0 +1,9 @@
+item [
+  id "20060",
+  gid "365",
+  name "Amarr Control Tower Small",
+  vol "2000.0",
+  icon "963",
+  market "1",
+  mg "1"
+]

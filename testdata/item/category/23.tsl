@@ -1,0 +1,6 @@
+category [
+  id "23",
+  name "Starbase",
+  icon "23",
+  blueprints "1"
+]

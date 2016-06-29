@@ -1,0 +1,9 @@
+item [
+  id "18",
+  gid "458",
+  name "Plagioclase",
+  vol "0.35",
+  icon "4",
+  market "1",
+  mg "1"
+]

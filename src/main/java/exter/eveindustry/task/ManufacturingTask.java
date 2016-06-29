@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import exter.eveindustry.data.blueprint.IBlueprint;
-import exter.eveindustry.data.blueprint.IInstallationGroup;
-import exter.eveindustry.data.blueprint.IInventionInstallation;
-import exter.eveindustry.data.decryptor.IDecryptor;
+import exter.eveindustry.data.blueprint.Blueprint;
+import exter.eveindustry.data.blueprint.InstallationGroup;
+import exter.eveindustry.data.blueprint.InventionInstallation;
+import exter.eveindustry.data.decryptor.Decryptor;
 import exter.eveindustry.data.systemcost.ISolarSystemIndustryCost;
 import exter.eveindustry.item.ItemStack;
 import exter.eveindustry.util.Utils;
@@ -62,38 +62,38 @@ public final class ManufacturingTask extends Task
    */
   public class Invention
   {
-    private IDecryptor decryptor;
+    private Decryptor decryptor;
     private int attempts;
-    private IInventionInstallation installation;
-    private IBlueprint.IInvention.IRelic relic;
+    private InventionInstallation installation;
+    private Blueprint.Invention.Relic relic;
     private int invruns;
     
-    public Invention()
+    Invention()
     {
       decryptor = null;
       attempts = 5;
       invruns = 1;
       
-      installation = factory.static_data.getDefaultInventionInstallation(blueprint);
-      relic = blueprint.getInvention().getDefaultRelic();
+      installation = factory.invention_installations.get(blueprint.invention.relics != null?158:38);
+      relic = blueprint.invention.default_relic;
     }
-
+       
     public Invention(TSLObject tsl)
     {
       setAttempts(tsl.getStringAsInt("attempts",5));
       setInventionRuns(tsl.getStringAsInt("runs",1));
-      setDecryptor(factory.static_data.getDecryptor(tsl.getStringAsInt("decryptor", -1)));
-      if(blueprint.getInvention().usesRelics())
+      setDecryptor(factory.decryptors.get(tsl.getStringAsInt("decryptor", -1)));
+      if(blueprint.invention.relics != null)
       {
-        setInstallation(factory.static_data.getInventionInstallation(tsl.getStringAsInt("installation", -1)));
-        relic = blueprint.getInvention().getRelic(tsl.getStringAsInt("relic",-1));
+        setInstallation(factory.invention_installations.get(tsl.getStringAsInt("installation", -1)));
+        relic = blueprint.invention.relics.get(tsl.getStringAsInt("relic",-1));
         if(relic == null)
         {
-          relic = blueprint.getInvention().getDefaultRelic();
+          relic = blueprint.invention.default_relic;
         }
       } else
       {
-        setInstallation(factory.static_data.getInventionInstallation(tsl.getStringAsInt("installation", -1)));
+        setInstallation(factory.invention_installations.get(tsl.getStringAsInt("installation", -1)));
         relic = null;
       }
     }
@@ -101,12 +101,12 @@ public final class ManufacturingTask extends Task
     public void writeToTSL(TSLObject tsl)
     {
       tsl.putString("attempts", attempts);
-      tsl.putString("decryptor", decryptor == null?-1:decryptor.getID());
-      tsl.putString("installation", installation.getID());
+      tsl.putString("decryptor", decryptor == null?-1:decryptor.item.id);
+      tsl.putString("installation", installation.id);
       tsl.putString("runs", invruns);
       if(relic != null)
       {
-        tsl.putString("relic", relic.getID());
+        tsl.putString("relic", relic.item.id);
       }
     }
     
@@ -133,12 +133,12 @@ public final class ManufacturingTask extends Task
     }
     
 
-    public IDecryptor getDecryptor()
+    public Decryptor getDecryptor()
     {
       return decryptor;
     }
     
-    public void setDecryptor(IDecryptor d)
+    public void setDecryptor(Decryptor d)
     {
       decryptor = d;
       updateMaterials();
@@ -146,9 +146,8 @@ public final class ManufacturingTask extends Task
     
     public double getChance()
     {
-      IBlueprint.IInvention inv = blueprint.getInvention();
       int science = 0;
-      for(int s:inv.getDatacoreSkillIDs())
+      for(int s:blueprint.invention.datacore_skill_ids)
       {
         int l = Utils.mapGet(skills, s, 0);
         science += l; 
@@ -156,14 +155,14 @@ public final class ManufacturingTask extends Task
       double basechance;
       if(relic != null)
       {
-        basechance = relic.getChance();
+        basechance = relic.chance;
       } else
       {
-        basechance = inv.getChance();
+        basechance = blueprint.invention.chance;
       }
       
-      double sk = 1 + (double)science / 30 + (double)Utils.mapGet(skills, inv.getEncryptionSkillID(), 0) / 40;
-      double decr = decryptor == null?1.0:decryptor.getModifierChance();
+      double sk = 1 + (double)science / 30 + (double)Utils.mapGet(skills, blueprint.invention.encryption_skill_id, 0) / 40;
+      double decr = decryptor == null?1.0:decryptor.chance;
       double chance = basechance * sk * decr;
       if(chance > 1)
       {
@@ -174,12 +173,12 @@ public final class ManufacturingTask extends Task
 
     public int getME()
     {
-      return decryptor == null?2:(decryptor.getModifierME() + 2);
+      return decryptor == null?2:(decryptor.me + 2);
     }
     
     public int getTE()
     {
-      return decryptor == null?4:(decryptor.getModifierTE() + 4);
+      return decryptor == null?4:(decryptor.te + 4);
     }
     
     public int getBlueprintRuns()
@@ -187,12 +186,12 @@ public final class ManufacturingTask extends Task
       int runs;
       if(relic != null)
       {
-        runs = relic.getRuns();
+        runs = relic.runs;
       } else
       {
-        runs = blueprint.getInvention().getRuns();
+        runs = blueprint.invention.runs;
       }
-      return decryptor == null?runs:(decryptor.getModifierRuns() + runs);
+      return decryptor == null?runs:(decryptor.runs + runs);
     }
     
     public int getBlueprintCopies()
@@ -201,39 +200,39 @@ public final class ManufacturingTask extends Task
     }
 
 
-    public IInventionInstallation getInstallation()
+    public InventionInstallation getInstallation()
     {
       return installation;
     }
 
-    public void setInstallation(IInventionInstallation ins)
+    public void setInstallation(InventionInstallation ins)
     {
       installation = ins;
-      boolean rel = blueprint.getInvention().usesRelics();
-      if(installation == null || installation.isForRelics() != rel)
+      boolean rel = blueprint.invention.relics != null;
+      if(installation == null || installation.relics != rel)
       {
-        installation = factory.static_data.getDefaultInventionInstallation(blueprint);
+        installation = factory.invention_installations.get(blueprint.invention.relics != null?158:38);
       }
     }
     
     public int getInventionTime()
     {
-      int advindustry_skill = skills.get(factory.static_data.getIndustrySkillID());
-      return (int) Math.ceil(invruns * blueprint.getInvention().getTime() * installation.getTimeBonus() * (1.0 - 0.03 * advindustry_skill));
+      int advindustry_skill = skills.get(3380);
+      return (int) Math.ceil(invruns * blueprint.invention.time * installation.time * (1.0 - 0.03 * advindustry_skill));
     }
     
-    public IBlueprint.IInvention.IRelic GetRelic()
+    public Blueprint.Invention.Relic GetRelic()
     {
       return relic;
     }
     
     public void setRelic(int id)
     {
-      IBlueprint.IInvention inv = blueprint.getInvention();
-      Set<Integer> relics = inv.getRelicIDs();
+      Blueprint.Invention inv = blueprint.invention;
+      Set<Integer> relics = inv.relics.keySet();
       if(relics != null && relics.contains(id))
       {
-        relic = inv.getRelic(id);
+        relic = inv.relics.get(id);
         updateMaterials();
       }
     }
@@ -255,18 +254,18 @@ public final class ManufacturingTask extends Task
   
   private Invention invention;
   
-  private IInstallationGroup installation;
-  private IBlueprint blueprint;
+  private InstallationGroup installation;
+  private Blueprint blueprint;
   
   private Map<Integer,Integer> skills;
   
-  ManufacturingTask(TaskFactory factory,IBlueprint blueprint)
+  ManufacturingTask(TaskFactory factory,Blueprint blueprint)
   {
     super(factory);
     this.blueprint = blueprint;
     skills = new HashMap<Integer,Integer>();
     hardwiring = Hardwiring.None;
-    if(blueprint.getInvention() != null)
+    if(blueprint.invention != null)
     {
       invention = new Invention();
     } else
@@ -289,7 +288,7 @@ public final class ManufacturingTask extends Task
   {
     super(factory,tsl);
     int bid = tsl.getStringAsInt("blueprint", -1);
-    blueprint = factory.static_data.getBlueprint(bid);
+    blueprint = factory.blueprints.get(bid);
     if(blueprint == null)
     {
       throw new TaskLoadException("Blueprint with ID " + bid + " not found");
@@ -313,8 +312,8 @@ public final class ManufacturingTask extends Task
       me_level = Utils.clamp(tsl.getStringAsInt("me", 0),0,10);
       te_level = Utils.clamp(tsl.getStringAsInt("te", 0),0,20);
     }
-    installation = factory.static_data.getInstallationGroup(tsl.getStringAsInt("installation", -1));
-    if(installation == null || installation.getGroupID() != blueprint.getProduct().item_id.getGroupID())
+    installation = factory.installation_groups.get(tsl.getStringAsInt("installation", -1));
+    if(installation == null || installation.group_id != blueprint.product.item.group_id)
     {
       setDefaultInstallation();
     }
@@ -329,7 +328,7 @@ public final class ManufacturingTask extends Task
     for(TSLObject s:tsl_skills)
     {
       int id = s.getStringAsInt("id", -1);
-      if(factory.static_data.getItem(id) != null)
+      if(factory.items.get(id) != null)
       {
         if(skills.containsKey(id))
         {
@@ -348,17 +347,17 @@ public final class ManufacturingTask extends Task
       return material.scaled(getRuns());
     } else
     {
-      return material.scaledCeil(installation.getMaterialBonus() * (1.0 - getME() * 0.01) * r);
+      return material.scaledCeil(installation.material * (1.0 - getME() * 0.01) * r);
     }
   }
   
   public int getProductionTime()
   {
     double eff_time;
-    int advindustry_skill = skills.get(factory.static_data.getIndustrySkillID());
-    int industry_skill = skills.get(factory.static_data.getAdvancedIndustrySkillID());
+    int industry_skill = skills.get(3380);
+    int advindustry_skill = skills.get(3388);
 
-    eff_time = (double) blueprint.getManufacturingTime() * installation.getTimeBonus() * (1 - (double)getTE() / 100.0) * getRuns();
+    eff_time = (double) blueprint.manufacture_time * installation.time * (1 - (double)getTE() / 100.0) * getRuns();
     eff_time *= (1.0 - 0.04 * industry_skill) * (1.0 - hardwiring.bonus) * (1.0 - advindustry_skill * 0.03);
 
     return (int)Math.ceil(eff_time);
@@ -369,10 +368,10 @@ public final class ManufacturingTask extends Task
   {
     BigDecimal base_cost = BigDecimal.ZERO;
     ISolarSystemIndustryCost syscost = factory.dynamic_data.getSolarSystemIndustryCost(system);
-    for(ItemStack m:blueprint.getMaterials())
+    for(ItemStack m:blueprint.materials)
     {
       base_cost = base_cost.add(
-          factory.static_data.getItemBaseCost(m.item_id).multiply(new BigDecimal(m.amount)));
+          factory.dynamic_data.getItemBaseCost(m.item).multiply(new BigDecimal(m.amount)));
     }
     BigDecimal jobtax = base_cost.multiply(
         new BigDecimal(
@@ -381,7 +380,7 @@ public final class ManufacturingTask extends Task
     {
       jobtax = jobtax.add(
           base_cost.multiply(
-              new BigDecimal(invention.installation.getCostBonus() * invention.attempts * syscost.getInventionCost() * 0.02 * (1.0 + tax / 100))));
+              new BigDecimal(invention.installation.cost * invention.attempts * syscost.getInventionCost() * 0.02 * (1.0 + tax / 100))));
     }
     return jobtax;
   }
@@ -395,7 +394,7 @@ public final class ManufacturingTask extends Task
 
     if(r * c > 0)
     {
-      for(ItemStack m : blueprint.getMaterials())
+      for(ItemStack m : blueprint.materials)
       {
         required.add(getEffectiveMaterial(m).scaled(c));
       }
@@ -404,15 +403,15 @@ public final class ManufacturingTask extends Task
     {
       if(invention.decryptor != null)
       {
-        required.add(new ItemStack(invention.decryptor.getItem(), (long)invention.attempts * invention.invruns));
+        required.add(new ItemStack(invention.decryptor.item, (long)invention.attempts * invention.invruns));
       }
-      for(ItemStack m : blueprint.getInvention().getMaterials())
+      for(ItemStack m : blueprint.invention.materials)
       {
         required.add(m.scaled(invention.attempts * invention.invruns));
       }
       if(invention.relic != null)
       {
-        required.add(new ItemStack(invention.relic.getItem(), (long)invention.attempts * invention.invruns));
+        required.add(new ItemStack(invention.relic.item, (long)invention.attempts * invention.invruns));
       }
     }
     return required;
@@ -427,7 +426,7 @@ public final class ManufacturingTask extends Task
 
     if(r * c > 0)
     {
-      ItemStack prod = blueprint.getProduct();
+      ItemStack prod = blueprint.product;
       produced.add(prod.scaled(r * c));
     }
     return produced;
@@ -436,7 +435,7 @@ public final class ManufacturingTask extends Task
 
   private void setDefaultInstallation()
   {
-    installation = factory.static_data.getDefaultInstallation(blueprint);
+    installation = blueprint.installation;
   }
 
   
@@ -515,15 +514,15 @@ public final class ManufacturingTask extends Task
   }
 
 
-  public IInstallationGroup getInstallation()
+  public InstallationGroup getInstallation()
   {
     return installation;
   }
 
-  public void setInstallation(IInstallationGroup ins)
+  public void setInstallation(InstallationGroup ins)
   {
     installation = ins;
-    if(installation == null || installation.getGroupID() != blueprint.getProduct().item_id.getGroupID())
+    if(installation == null || installation.group_id != blueprint.product.item.group_id)
     {
       setDefaultInstallation();
     }
@@ -534,7 +533,7 @@ public final class ManufacturingTask extends Task
   public void writeToTSL(TSLObject tsl)
   {
     super.writeToTSL(tsl);
-    tsl.putString("blueprint", blueprint.getID());
+    tsl.putString("blueprint", blueprint.product.item.id);
     tsl.putString("hardwiring", hardwiring.value);
     if(invention == null)
     {
@@ -548,7 +547,7 @@ public final class ManufacturingTask extends Task
       invention.writeToTSL(tsl_inv);
       tsl.putObject("invention", tsl_inv);
     }
-    tsl.putString("installation", installation.getID());
+    tsl.putString("installation", installation.id);
     tsl.putString("system", system);
     tsl.putString("tax", tax);
     
@@ -561,7 +560,7 @@ public final class ManufacturingTask extends Task
     }
   }
 
-  public IBlueprint getBlueprint()
+  public Blueprint getBlueprint()
   {
     return blueprint;
   }
@@ -610,7 +609,7 @@ public final class ManufacturingTask extends Task
   
   public void setInventionEnabled(boolean enabled)
   {
-    if(enabled && blueprint.getInvention() != null)
+    if(enabled && blueprint.invention != null)
     {
       if(invention == null)
       {
@@ -657,20 +656,18 @@ public final class ManufacturingTask extends Task
   {
     
     Map<Integer,Integer> newskills = new HashMap<Integer,Integer>();
-    int ind = factory.static_data.getIndustrySkillID();
-    newskills.put(ind, factory.dynamic_data.getDefaultSkillLevel(ind));
-    ind = factory.static_data.getAdvancedIndustrySkillID();
-    newskills.put(ind, factory.dynamic_data.getDefaultSkillLevel(ind));
-    for(int s:blueprint.getSkills())
+    newskills.put(3380, factory.dynamic_data.getDefaultSkillLevel(3380));
+    newskills.put(3388, factory.dynamic_data.getDefaultSkillLevel(3388));
+    for(int s:blueprint.skills)
     {
       newskills.put(s, factory.dynamic_data.getDefaultSkillLevel(s));
     }
-    IBlueprint.IInvention inv = blueprint.getInvention();
+    Blueprint.Invention inv = blueprint.invention;
     if(inv != null && invention != null)
     {
-      int invs = inv.getEncryptionSkillID();
+      int invs = inv.encryption_skill_id;
       newskills.put(invs, factory.dynamic_data.getDefaultSkillLevel(invs));
-      for(int s:inv.getDatacoreSkillIDs())
+      for(int s:inv.datacore_skill_ids)
       {
         newskills.put(s, factory.dynamic_data.getDefaultSkillLevel(s));
       }

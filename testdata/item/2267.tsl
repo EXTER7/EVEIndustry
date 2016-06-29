@@ -1,0 +1,9 @@
+item [
+  id "2267",
+  gid "1032",
+  name "Base Metals",
+  vol "0.01",
+  icon "709",
+  market "1",
+  mg "1"
+]

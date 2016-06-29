@@ -1,0 +1,9 @@
+item [
+  id "2400",
+  gid "1042",
+  name "Toxic Metals",
+  vol "0.38",
+  icon "760",
+  market "1",
+  mg "1"
+]

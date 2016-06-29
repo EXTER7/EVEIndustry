@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import exter.eveindustry.data.inventory.IItem;
+import exter.eveindustry.data.item.Item;
 import exter.eveindustry.item.ItemStack;
 import exter.eveindustry.market.Market;
 import exter.eveindustry.util.Utils;
@@ -120,13 +120,13 @@ public abstract class Task
     Map<Integer,Long> materials = new HashMap<Integer,Long>();
     for(ItemStack mat:getRawProducedMaterials())
     {
-      int id = mat.item_id.getID();
+      int id = mat.item.id;
       long amount = Utils.mapGet(materials, id, 0L);
       materials.put(id, amount + mat.amount);
     }
     for(ItemStack mat:getRawRequiredMaterials())
     {
-      int id = mat.item_id.getID();
+      int id = mat.item.id;
       long amount = Utils.mapGet(materials, id, 0L);
       materials.put(id, amount - mat.amount);
     }
@@ -138,7 +138,7 @@ public abstract class Task
       long amount = mat.getValue();
       if(amount > 0)
       {
-        produced_materials.add(new ItemStack(factory.static_data.getItem(id), amount));
+        produced_materials.add(new ItemStack(factory.items.get(id), amount));
         if(!material_markets.containsKey(id))
         {
           material_markets.put(id, factory.dynamic_data.getDefaultProducedMarket());
@@ -146,7 +146,7 @@ public abstract class Task
       }
       if(amount < 0)
       {
-        required_materials.add(new ItemStack(factory.static_data.getItem(id),-amount));
+        required_materials.add(new ItemStack(factory.items.get(id),-amount));
         if(!material_markets.containsKey(id))
         {
           material_markets.put(id, factory.dynamic_data.getDefaultRequiredMarket());
@@ -182,11 +182,11 @@ public abstract class Task
    * @param item The material item.
    * @param market The market to change.
    */
-  public final void setMaterialMarket(IItem item, Market market)
+  public final void setMaterialMarket(Item item, Market market)
   {
     if(market != null)
     {
-      material_markets.put(item.getID(), market);
+      material_markets.put(item.id, market);
     }
   }
 
@@ -202,7 +202,7 @@ public abstract class Task
     this(factory);
     for(TSLObject tsl_market : tsl.getObjectList("market"))
     {
-      IItem i = factory.static_data.getItem(tsl_market.getStringAsInt("item", -1));
+      Item i = factory.items.get(tsl_market.getStringAsInt("item", -1));
       if(i != null)
       {
         setMaterialMarket(i, new Market(tsl_market,factory.dynamic_data));
@@ -303,9 +303,9 @@ public abstract class Task
    * Get the market of a material.
    * @param item The material item to look up.
    */
-  public final Market getMaterialMarket(IItem item)
+  public final Market getMaterialMarket(Item item)
   {
-    return material_markets.get(item.getID());
+    return material_markets.get(item.id);
   }
 
   /**
@@ -326,14 +326,14 @@ public abstract class Task
    */
   public final BigDecimal getMaterialMarketPrice(ItemStack item, MarketAction action)
   {
-    return getMaterialMarketPrice(item.item_id,action).multiply(new BigDecimal(item.amount));
+    return getMaterialMarketPrice(item.item,action).multiply(new BigDecimal(item.amount));
   }
 
   /**
    * Get the market of a material item.
    * @param item the material stack to lookup the price.
    */
-  public final BigDecimal getMaterialMarketPrice(IItem item)
+  public final BigDecimal getMaterialMarketPrice(Item item)
   {
     return getMaterialMarketPrice(item,MarketAction.UNKNOWN);
   }
@@ -343,7 +343,7 @@ public abstract class Task
    * @param item the material stack to lookup the price.
    * @param action the type of transaction being done.
    */
-  public final BigDecimal getMaterialMarketPrice(IItem item, MarketAction action)
+  public final BigDecimal getMaterialMarketPrice(Item item, MarketAction action)
   {
     Market market = getMaterialMarket(item);
     if(market == null)
@@ -377,7 +377,7 @@ public abstract class Task
     return price;
   }
 
-  public final BigDecimal getMaterialBrokerFee(IItem item)
+  public final BigDecimal getMaterialBrokerFee(Item item)
   {
     Market market = getMaterialMarket(item);
     if(market == null)
@@ -387,7 +387,7 @@ public abstract class Task
     return factory.dynamic_data.getMarketPrice(item, market).multiply(market.broker.multiply(PERCENT));
   }
 
-  public final BigDecimal getMaterialTransactionTax(IItem item)
+  public final BigDecimal getMaterialTransactionTax(Item item)
   {
     Market market = getMaterialMarket(item);
     if(market == null)

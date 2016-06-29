@@ -1,0 +1,9 @@
+item [
+  id "2272",
+  gid "1032",
+  name "Heavy Metals",
+  vol "0.01",
+  icon "712",
+  market "1",
+  mg "1"
+]

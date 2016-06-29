@@ -1,0 +1,9 @@
+item [
+  id "178",
+  gid "83",
+  name "Carbonized Lead S",
+  vol "0.0025",
+  icon "53",
+  market "1",
+  mg "1"
+]

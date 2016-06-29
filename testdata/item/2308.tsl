@@ -1,0 +1,9 @@
+item [
+  id "2308",
+  gid "1033",
+  name "Suspended Plasma",
+  vol "0.01",
+  icon "726",
+  market "1",
+  mg "1"
+]

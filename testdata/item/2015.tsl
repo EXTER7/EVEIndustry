@@ -1,0 +1,9 @@
+item [
+  id "2015",
+  gid "7",
+  name "Planet (Lava)",
+  vol "1.0",
+  icon "659",
+  market "0",
+  mg "1"
+]

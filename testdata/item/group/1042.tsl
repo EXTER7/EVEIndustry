@@ -1,0 +1,7 @@
+group [
+  id "1042",
+  name "Basic Commodities",
+  cid "43",
+  icon "577",
+  blueprints "0"
+]

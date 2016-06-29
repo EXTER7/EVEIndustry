@@ -1,0 +1,9 @@
+item [
+  id "36",
+  gid "18",
+  name "Mexallon",
+  vol "0.01",
+  icon "11",
+  market "1",
+  mg "1"
+]

@@ -1,0 +1,9 @@
+item [
+  id "35",
+  gid "18",
+  name "Pyerite",
+  vol "0.01",
+  icon "10",
+  market "1",
+  mg "1"
+]

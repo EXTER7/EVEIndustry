@@ -2,8 +2,8 @@ package exter.eveindustry.data;
 
 import java.math.BigDecimal;
 
-import exter.eveindustry.data.blueprint.IBlueprint;
-import exter.eveindustry.data.inventory.IItem;
+import exter.eveindustry.data.blueprint.Blueprint;
+import exter.eveindustry.data.item.Item;
 import exter.eveindustry.data.systemcost.ISolarSystemIndustryCost;
 import exter.eveindustry.market.Market;
 
@@ -22,7 +22,7 @@ public interface IDynamicDataProvider
    * Get an item's base cost.
    * This value can be obtained from CCP's CREST API.
    */
-  public BigDecimal getItemBaseCost(IItem item);
+  public BigDecimal getItemBaseCost(Item item);
   
   /**
    * Get the solar system's industry cost.
@@ -36,7 +36,7 @@ public interface IDynamicDataProvider
    * @param market The market in which to to look up the price.
    * @return The ISK price per unit of the item.
    */
-  public BigDecimal getMarketPrice(IItem item, Market market);
+  public BigDecimal getMarketPrice(Item item, Market market);
 
   /**
    * Get per-skill default level.
@@ -56,12 +56,12 @@ public interface IDynamicDataProvider
   /**
    * Get the default ME for a blueprint.
    */
-  public int getDefaultBlueprintME(IBlueprint bp);
+  public int getDefaultBlueprintME(Blueprint bp);
 
   /**
    * Get the default TE for a blueprint.
    */
-  public int getDefaultBlueprintTE(IBlueprint bp);
+  public int getDefaultBlueprintTE(Blueprint bp);
   
   /**
    * Get the default broker fee.

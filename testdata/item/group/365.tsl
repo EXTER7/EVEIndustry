@@ -1,0 +1,7 @@
+group [
+  id "365",
+  name "Control Tower",
+  cid "23",
+  icon "513",
+  blueprints "1"
+]
