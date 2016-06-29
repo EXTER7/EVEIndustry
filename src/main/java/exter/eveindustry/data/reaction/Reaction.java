@@ -7,7 +7,6 @@ import java.util.List;
 import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
-import exter.eveindustry.data.planet.PlanetBuilding;
 import exter.eveindustry.item.ItemStack;
 import exter.tsl.TSLObject;
 

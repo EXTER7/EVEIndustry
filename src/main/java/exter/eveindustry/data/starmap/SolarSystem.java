@@ -2,7 +2,6 @@ package exter.eveindustry.data.starmap;
 
 import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
-import exter.eveindustry.data.item.Item;
 import exter.tsl.TSLObject;
 
 public class SolarSystem

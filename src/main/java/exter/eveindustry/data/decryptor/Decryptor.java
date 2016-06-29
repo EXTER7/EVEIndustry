@@ -1,8 +1,6 @@
 package exter.eveindustry.data.decryptor;
 
-import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.access.FileData;
-import exter.eveindustry.data.blueprint.InventionInstallation;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
 import exter.tsl.TSLObject;
