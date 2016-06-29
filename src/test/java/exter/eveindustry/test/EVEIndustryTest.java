@@ -20,7 +20,13 @@ import exter.eveindustry.test.data.TestDataProvider;
 
 public class EVEIndustryTest
 {
-  static private final TaskFactory factory = new TaskFactory(new TestDataProvider());
+  static private TaskFactory factory;
+  
+  static
+  {
+    TestDataProvider data = new TestDataProvider();
+    factory = new TaskFactory(data,data);
+  }
   
   static private Map<Integer,ItemStack> mapMaterials(List<ItemStack> materials)
   {
@@ -35,73 +41,73 @@ public class EVEIndustryTest
   @Test
   public void testInventoryDA()
   {
-    Assert.assertNotEquals(null, factory.provider.getItem(18));
-    Assert.assertNotEquals(null, factory.provider.getItem(34));
-    Assert.assertNotEquals(null, factory.provider.getItem(35));
-    Assert.assertNotEquals(null, factory.provider.getItem(36));
+    Assert.assertNotEquals(null, factory.static_data.getItem(18));
+    Assert.assertNotEquals(null, factory.static_data.getItem(34));
+    Assert.assertNotEquals(null, factory.static_data.getItem(35));
+    Assert.assertNotEquals(null, factory.static_data.getItem(36));
   }
 
   @Test
   public void testBlueprintDA()
   {
-    Assert.assertNotEquals(null, factory.provider.getBlueprint(178));
+    Assert.assertNotEquals(null, factory.static_data.getBlueprint(178));
   }
 
   @Test
   public void testInstallationDA()
   {
-    Assert.assertNotEquals(null, factory.provider.getInstallationGroup(8105));
-    Assert.assertNotEquals(null, factory.provider.getInventionInstallation(38));
-    Assert.assertNotEquals(null, factory.provider.getInventionInstallation(158));
+    Assert.assertNotEquals(null, factory.static_data.getInstallationGroup(8105));
+    Assert.assertNotEquals(null, factory.static_data.getInventionInstallation(38));
+    Assert.assertNotEquals(null, factory.static_data.getInventionInstallation(158));
   }
 
   @Test
   public void testDecryptorDA()
   {
-    Assert.assertNotEquals(null, factory.provider.getDecryptor(34201));
+    Assert.assertNotEquals(null, factory.static_data.getDecryptor(34201));
   }
 
   @Test
   public void testRefinableDA()
   {
-    Assert.assertNotEquals(null, factory.provider.getRefinable(18));
+    Assert.assertNotEquals(null, factory.static_data.getRefinable(18));
   }
 
   @Test
   public void testReactionDA()
   {
-    Assert.assertNotEquals(null, factory.provider.getReaction(16671));
+    Assert.assertNotEquals(null, factory.static_data.getReaction(16671));
   }
 
   @Test
   public void testPlanetBuildingDA()
   {
-    Assert.assertNotEquals(null, factory.provider.getPlanetBuilding(2267));
-    Assert.assertNotEquals(null, factory.provider.getPlanetBuilding(2272));
-    Assert.assertNotEquals(null, factory.provider.getPlanetBuilding(2398));
-    Assert.assertNotEquals(null, factory.provider.getPlanetBuilding(2400));
-    Assert.assertNotEquals(null, factory.provider.getPlanetBuilding(3828));
+    Assert.assertNotEquals(null, factory.static_data.getPlanetBuilding(2267));
+    Assert.assertNotEquals(null, factory.static_data.getPlanetBuilding(2272));
+    Assert.assertNotEquals(null, factory.static_data.getPlanetBuilding(2398));
+    Assert.assertNotEquals(null, factory.static_data.getPlanetBuilding(2400));
+    Assert.assertNotEquals(null, factory.static_data.getPlanetBuilding(3828));
   }
 
   @Test
   public void testPlanetDA()
   {
-    Assert.assertNotEquals(null, factory.provider.getPlanet(2015));
+    Assert.assertNotEquals(null, factory.static_data.getPlanet(2015));
   }
   
   @Test
   public void testStarmap()
   {
-    Assert.assertNotEquals(null, factory.provider.getSolarSystemIndustryCost(30000142));
-    Assert.assertNotEquals(null, factory.provider.getSolarSystemIndustryCost(30002798));
+    Assert.assertNotEquals(null, factory.dynamic_data.getSolarSystemIndustryCost(30000142));
+    Assert.assertNotEquals(null, factory.dynamic_data.getSolarSystemIndustryCost(30002798));
   }
 
   @Test
   public void testPriceData()
   {
-    IItem item = factory.provider.getItem(34);
-    Assert.assertEquals(new BigDecimal("5"), factory.provider.getMarketPrice(item, new Market(30000142,Market.Order.BUY,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO)));
-    Assert.assertEquals(new BigDecimal("6"), factory.provider.getMarketPrice(item, new Market(30000142,Market.Order.SELL,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO)));
+    IItem item = factory.static_data.getItem(34);
+    Assert.assertEquals(new BigDecimal("5"), factory.dynamic_data.getMarketPrice(item, new Market(30000142,Market.Order.BUY,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO)));
+    Assert.assertEquals(new BigDecimal("6"), factory.dynamic_data.getMarketPrice(item, new Market(30000142,Market.Order.SELL,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO)));
   }
 
   @Test

@@ -38,7 +38,7 @@ public final class PlanetTask extends Task
   {
     super(factory,tsl);
     int pid = tsl.getStringAsInt("planet", -1);
-    planet = factory.provider.getPlanet(pid);
+    planet = factory.static_data.getPlanet(pid);
     if(planet == null)
     {
       throw new TaskLoadException("Planet with ID " + pid + " not found");
@@ -49,7 +49,7 @@ public final class PlanetTask extends Task
     buildings = new ArrayList<IPlanetBuilding>();
     for(int id:tsl.getStringAsIntegerList("building"))
     {
-      IPlanetBuilding p = factory.provider.getPlanetBuilding(id);
+      IPlanetBuilding p = factory.static_data.getPlanetBuilding(id);
       if(p != null && (p.getMaterials().size() > 0 || planet.getResources().contains(p.getProduct().item_id)))
       {
         buildings.add(p);
@@ -146,7 +146,7 @@ public final class PlanetTask extends Task
 
   public void addBuilding(int building_id)
   {
-    IPlanetBuilding building = factory.provider.getPlanetBuilding(building_id);
+    IPlanetBuilding building = factory.static_data.getPlanetBuilding(building_id);
     if(building == null)
     {
       return;
@@ -200,12 +200,12 @@ public final class PlanetTask extends Task
     
     for(ItemStack m:getProducedMaterials())
     {
-      IPlanetBuilding p = factory.provider.getPlanetBuilding(m.item_id);
+      IPlanetBuilding p = factory.static_data.getPlanetBuilding(m.item_id);
       expense = expense.add(new BigDecimal((double)(p.getCustomsOfficeTax() * m.amount) * (tax_percent / 100)));
     }
     for(ItemStack m:getRequiredMaterials())
     {
-      IPlanetBuilding p = factory.provider.getPlanetBuilding(m.item_id);
+      IPlanetBuilding p = factory.static_data.getPlanetBuilding(m.item_id);
       expense = expense.add(new BigDecimal((double)(p.getCustomsOfficeTax() * m.amount) * 0.5 * (tax_percent / 100)));
     }
     return expense;

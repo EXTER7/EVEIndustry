@@ -35,7 +35,7 @@ public final class ReactionTask extends Task
   {
     super(factory,tsl);
     int tid = tsl.getStringAsInt("tower", -1);
-    tower = factory.provider.getStarbaseTower(tid);
+    tower = factory.static_data.getStarbaseTower(tid);
     if(tower == null)
     {
       throw new TaskLoadException("Starbase Tower with ID " + tid + " not found");
@@ -47,7 +47,7 @@ public final class ReactionTask extends Task
     List<Integer> rval = tsl.getStringAsIntegerList("reaction");
     for(int i:rval)
     {
-      IReaction r = factory.provider.getReaction(i);
+      IReaction r = factory.static_data.getReaction(i);
       if(r != null)
       {
         reactions.add(r);
@@ -165,7 +165,7 @@ public final class ReactionTask extends Task
 
   public void addReaction(int reaction_id)
   {
-    IReaction reaction = factory.provider.getReaction(reaction_id);
+    IReaction reaction = factory.static_data.getReaction(reaction_id);
     if(reaction == null)
     {
       return;

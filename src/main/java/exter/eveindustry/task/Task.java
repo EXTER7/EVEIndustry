@@ -138,18 +138,18 @@ public abstract class Task
       long amount = mat.getValue();
       if(amount > 0)
       {
-        produced_materials.add(new ItemStack(factory.provider.getItem(id), amount));
+        produced_materials.add(new ItemStack(factory.static_data.getItem(id), amount));
         if(!material_markets.containsKey(id))
         {
-          material_markets.put(id, factory.provider.getDefaultProducedMarket());
+          material_markets.put(id, factory.dynamic_data.getDefaultProducedMarket());
         }
       }
       if(amount < 0)
       {
-        required_materials.add(new ItemStack(factory.provider.getItem(id),-amount));
+        required_materials.add(new ItemStack(factory.static_data.getItem(id),-amount));
         if(!material_markets.containsKey(id))
         {
-          material_markets.put(id, factory.provider.getDefaultRequiredMarket());
+          material_markets.put(id, factory.dynamic_data.getDefaultRequiredMarket());
         }
       }
     }
@@ -202,10 +202,10 @@ public abstract class Task
     this(factory);
     for(TSLObject tsl_market : tsl.getObjectList("market"))
     {
-      IItem i = factory.provider.getItem(tsl_market.getStringAsInt("item", -1));
+      IItem i = factory.static_data.getItem(tsl_market.getStringAsInt("item", -1));
       if(i != null)
       {
-        setMaterialMarket(i, new Market(tsl_market,factory.provider));
+        setMaterialMarket(i, new Market(tsl_market,factory.dynamic_data));
       }
     }
   }
@@ -350,7 +350,7 @@ public abstract class Task
     {
       return BigDecimal.ZERO;
     }
-    BigDecimal price = factory.provider.getMarketPrice(item, market);
+    BigDecimal price = factory.dynamic_data.getMarketPrice(item, market);
     BigDecimal tax = price.multiply(market.transaction.multiply(PERCENT));
     BigDecimal broker = price.multiply(market.broker.multiply(PERCENT));
     switch(action)
@@ -384,7 +384,7 @@ public abstract class Task
     {
       return BigDecimal.ZERO;
     }
-    return factory.provider.getMarketPrice(item, market).multiply(market.broker.multiply(PERCENT));
+    return factory.dynamic_data.getMarketPrice(item, market).multiply(market.broker.multiply(PERCENT));
   }
 
   public final BigDecimal getMaterialTransactionTax(IItem item)
@@ -394,6 +394,6 @@ public abstract class Task
     {
       return BigDecimal.ZERO;
     }
-    return factory.provider.getMarketPrice(item, market).multiply(market.transaction.multiply(PERCENT));
+    return factory.dynamic_data.getMarketPrice(item, market).multiply(market.transaction.multiply(PERCENT));
   }
 }

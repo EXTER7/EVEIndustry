@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import exter.eveindustry.data.IEVEDataProvider;
+import exter.eveindustry.data.IDynamicDataProvider;
 import exter.eveindustry.util.Utils;
 import exter.tsl.TSLObject;
 
@@ -132,7 +132,7 @@ public final class Market
     transaction = p.transaction;
   }
 
-  public Market(TSLObject tsl,IEVEDataProvider provider)
+  public Market(TSLObject tsl,IDynamicDataProvider provider)
   {
     system = tsl.getStringAsInt("system", provider.getDefaultSolarSystem());
     order = Order.fromInt(tsl.getStringAsInt("order", tsl.getStringAsInt("source", Order.SELL.value)));

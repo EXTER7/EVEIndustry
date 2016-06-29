@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import exter.eveindustry.data.IEVEDataProvider;
 import exter.eveindustry.data.refinable.IRefinable;
 import exter.eveindustry.item.ItemStack;
 import exter.eveindustry.util.Utils;
@@ -67,13 +66,12 @@ public final class RefiningTask extends Task
   RefiningTask(TaskFactory factory,IRefinable ref)
   {
     super(factory);
-    IEVEDataProvider data = factory.provider;
     refinable = ref;
     installation_efficiency = 50;
     hardwiring = Hardwiring.None;
-    preprocessing_skill = data.getDefaultSkillLevel(data.getRefiningSkillID());
-    repreff_skill = data.getDefaultSkillLevel(data.getRefineryEfficiencySkillID());
-    processing_skill = data.getDefaultSkillLevel(refinable.getSkill());
+    preprocessing_skill = factory.dynamic_data.getDefaultSkillLevel(factory.static_data.getRefiningSkillID());
+    repreff_skill = factory.dynamic_data.getDefaultSkillLevel(factory.static_data.getRefineryEfficiencySkillID());
+    processing_skill = factory.dynamic_data.getDefaultSkillLevel(refinable.getSkill());
     tax_percent = 5;
     amount = ref.getRequiredItem().amount;
     updateMaterials();
@@ -83,7 +81,7 @@ public final class RefiningTask extends Task
   {
     super(factory,tsl);
     int id = tsl.getStringAsInt("refinable", -1);
-    refinable = factory.provider.getRefinable(id);
+    refinable = factory.static_data.getRefinable(id);
     if(refinable == null)
     {
       throw new TaskLoadException("Refinable with ID " + id + " not found");

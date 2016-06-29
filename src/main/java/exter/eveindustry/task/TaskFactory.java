@@ -4,7 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import exter.eveindustry.data.IEVEDataProvider;
+import exter.eveindustry.data.IDynamicDataProvider;
+import exter.eveindustry.data.IStaticDataProvider;
 import exter.eveindustry.data.blueprint.IBlueprint;
 import exter.eveindustry.data.planet.IPlanet;
 import exter.eveindustry.data.reaction.IStarbaseTower;
@@ -17,16 +18,18 @@ import exter.tsl.TSLObject;
  */
 public final class TaskFactory
 {
-  public final IEVEDataProvider provider;
+  public final IStaticDataProvider static_data;
+  public final IDynamicDataProvider dynamic_data;
   
   // Used for loading/saving from/to TSL Objects.
   static private Map<String, Class<? extends Task>> task_types;
   static private Map<Class<? extends Task>, String> task_names;
   
   
-  public TaskFactory(IEVEDataProvider provider)
+  public TaskFactory(IStaticDataProvider static_data,IDynamicDataProvider dynamic_data)
   {
-    this.provider = provider;
+    this.static_data = static_data;
+    this.dynamic_data = dynamic_data;
   }
   
   /**
@@ -49,7 +52,7 @@ public final class TaskFactory
       {
         throw new TaskLoadException("Invalid task type: " + type);
       }
-      task = clazz.getDeclaredConstructor(TaskFactory.class,TSLObject.class).newInstance(this,provider);
+      task = clazz.getDeclaredConstructor(TaskFactory.class,TSLObject.class).newInstance(this,static_data);
     } catch(InstantiationException e)
     {
       throw new RuntimeException(e);
@@ -85,7 +88,7 @@ public final class TaskFactory
    */
   public ManufacturingTask newManufacturing(int blueprint_id)
   {
-    IBlueprint bp = provider.getBlueprint(blueprint_id);
+    IBlueprint bp = static_data.getBlueprint(blueprint_id);
     if(bp == null)
     {
       return null;
@@ -100,7 +103,7 @@ public final class TaskFactory
    */
   public RefiningTask newRefining(int refinable_id)
   {
-    IRefinable ref = provider.getRefinable(refinable_id);
+    IRefinable ref = static_data.getRefinable(refinable_id);
     if(ref == null)
     {
       return null;
@@ -115,7 +118,7 @@ public final class TaskFactory
    */
   public ReactionTask newReaction(int tower_id)
   {
-    IStarbaseTower tower = provider.getStarbaseTower(tower_id);
+    IStarbaseTower tower = static_data.getStarbaseTower(tower_id);
     if(tower == null)
     {
       return null;
@@ -130,7 +133,7 @@ public final class TaskFactory
    */
   public PlanetTask newPlanet(int planet_id)
   {
-    IPlanet planet = provider.getPlanet(planet_id);
+    IPlanet planet = static_data.getPlanet(planet_id);
     if(planet == null)
     {
       return null;

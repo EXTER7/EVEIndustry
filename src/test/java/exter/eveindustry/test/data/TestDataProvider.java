@@ -2,7 +2,8 @@ package exter.eveindustry.test.data;
 
 import java.math.BigDecimal;
 
-import exter.eveindustry.data.IEVEDataProvider;
+import exter.eveindustry.data.IDynamicDataProvider;
+import exter.eveindustry.data.IStaticDataProvider;
 import exter.eveindustry.data.blueprint.IBlueprint;
 import exter.eveindustry.data.blueprint.IInstallationGroup;
 import exter.eveindustry.data.blueprint.IInventionInstallation;
@@ -28,7 +29,7 @@ import exter.eveindustry.test.data.refine.RefinableDA;
 import exter.eveindustry.test.data.starbase.StarbaseTowerDA;
 import exter.eveindustry.test.data.systemcost.TestSystemCost;
 
-public class TestDataProvider implements IEVEDataProvider
+public class TestDataProvider implements IStaticDataProvider,IDynamicDataProvider
 {
 
   @Override
