@@ -10,7 +10,7 @@ import exter.eveindustry.data.item.Item;
 import exter.eveindustry.item.ItemStack;
 import exter.tsl.TSLObject;
 
-public class Refinable
+public final class Refinable
 {
   public final List<ItemStack> products;
   public final ItemStack item;

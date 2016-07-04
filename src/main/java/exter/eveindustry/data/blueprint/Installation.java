@@ -4,7 +4,7 @@ import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.tsl.TSLObject;
 
-public class Installation
+public final class Installation
 {
   public final int id;
   public final String name;

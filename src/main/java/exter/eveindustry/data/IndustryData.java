@@ -8,7 +8,7 @@ import exter.tsl.InvalidTSLException;
 import exter.tsl.TSLObject;
 import exter.tsl.TSLReader;
 
-public class IndustryData
+public final class IndustryData
 {
   public final long build_time;
   public final int skill_industry;

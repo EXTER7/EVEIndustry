@@ -14,9 +14,9 @@ import exter.eveindustry.data.item.Item;
 import exter.eveindustry.item.ItemStack;
 import exter.tsl.TSLObject;
 
-public class Blueprint
+public final class Blueprint
 {
-  static public class Invention
+  static final public class Invention
   {
     public class Relic
     {

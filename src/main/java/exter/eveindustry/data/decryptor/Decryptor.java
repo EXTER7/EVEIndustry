@@ -5,7 +5,7 @@ import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
 import exter.tsl.TSLObject;
 
-public class Decryptor
+public final class Decryptor
 {
   public final Item item;
   public final int me;

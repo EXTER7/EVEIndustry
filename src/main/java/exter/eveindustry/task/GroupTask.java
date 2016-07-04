@@ -163,7 +163,7 @@ public final class GroupTask extends Task
   
   public void addTask(String name,Task task)
   {
-    if(task == null)
+    if(task == null || task.factory != factory)
     {
       return;
     }

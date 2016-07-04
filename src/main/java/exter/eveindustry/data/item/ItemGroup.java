@@ -4,7 +4,7 @@ import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.tsl.TSLObject;
 
-public class ItemGroup
+public final class ItemGroup
 {
   public final int id;
   public final int category_id;

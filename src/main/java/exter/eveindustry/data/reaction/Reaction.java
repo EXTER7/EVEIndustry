@@ -10,7 +10,7 @@ import exter.eveindustry.data.item.Item;
 import exter.eveindustry.item.ItemStack;
 import exter.tsl.TSLObject;
 
-public class Reaction
+public final class Reaction
 {
   public final List<ItemStack> inputs;
   public final List<ItemStack> outputs;

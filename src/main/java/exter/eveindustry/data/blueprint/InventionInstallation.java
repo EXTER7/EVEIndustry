@@ -4,7 +4,7 @@ import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.tsl.TSLObject;
 
-public class InventionInstallation
+public final class InventionInstallation
 {
   @Override
   public int hashCode()

@@ -9,7 +9,7 @@ import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
 import exter.tsl.TSLObject;
 
-public class Planet
+public final class Planet
 {
   public final List<Item> resources;
   public final String type_name;

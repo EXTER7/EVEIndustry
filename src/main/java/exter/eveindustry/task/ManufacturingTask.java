@@ -85,7 +85,7 @@ public final class ManufacturingTask extends Task
       setDecryptor(tsl.getStringAsInt("decryptor", -1));
       if(blueprint.invention.relics != null)
       {
-        setInstallation(factory.invention_installations.get(tsl.getStringAsInt("installation", -1)));
+        setInstallation(tsl.getStringAsInt("installation", -1));
         relic = blueprint.invention.relics.get(tsl.getStringAsInt("relic",-1));
         if(relic == null)
         {
@@ -93,7 +93,7 @@ public final class ManufacturingTask extends Task
         }
       } else
       {
-        setInstallation(factory.invention_installations.get(tsl.getStringAsInt("installation", -1)));
+        setInstallation(tsl.getStringAsInt("installation", -1));
         relic = null;
       }
     }
@@ -205,9 +205,9 @@ public final class ManufacturingTask extends Task
       return installation;
     }
 
-    public void setInstallation(InventionInstallation ins)
+    public void setInstallation(int inv_instalation_id)
     {
-      installation = ins;
+      installation = factory.invention_installations.get(inv_instalation_id);
       boolean rel = blueprint.invention.relics != null;
       if(installation == null || installation.relics != rel)
       {
@@ -345,6 +345,7 @@ public final class ManufacturingTask extends Task
     
     updateMaterials();
   }
+  
   private ItemStack getEffectiveMaterial(ItemStack material)
   {
     int r = getRuns();
@@ -525,9 +526,9 @@ public final class ManufacturingTask extends Task
     return installation;
   }
 
-  public void setInstallation(InstallationGroup ins)
+  public void setInstallation(int inst_id)
   {
-    installation = ins;
+    installation = factory.installation_groups.get(inst_id);
     if(installation == null || installation.group_id != blueprint.product.item.group_id)
     {
       setDefaultInstallation();
