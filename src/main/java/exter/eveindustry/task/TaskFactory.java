@@ -15,6 +15,7 @@ import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
 import exter.eveindustry.data.item.ItemCategory;
 import exter.eveindustry.data.item.ItemGroup;
+import exter.eveindustry.data.item.ItemMetaGroup;
 import exter.eveindustry.data.planet.Planet;
 import exter.eveindustry.data.planet.PlanetBuilding;
 import exter.eveindustry.data.reaction.Reaction;
@@ -33,6 +34,7 @@ public final class TaskFactory
   public final Item.Data items;
   public final ItemGroup.Data item_groups;
   public final ItemCategory.Data item_categories;
+  public final ItemMetaGroup.Data item_metagroups;
   public final Blueprint.Data blueprints;
   public final Installation.Data installations;
   public final InstallationGroup.Data installation_groups;
@@ -58,6 +60,7 @@ public final class TaskFactory
     items = new Item.Data(fs);
     item_groups = new ItemGroup.Data(fs);
     item_categories = new ItemCategory.Data(fs);
+    item_metagroups = new ItemMetaGroup.Data(fs);
     installations = new Installation.Data(fs);
     installation_groups = new InstallationGroup.Data(fs);
     invention_installations = new InventionInstallation.Data(fs);
