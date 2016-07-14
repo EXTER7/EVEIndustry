@@ -2,8 +2,10 @@ package exter.eveindustry.data.access;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.tsl.InvalidTSLException;
@@ -63,5 +65,10 @@ public abstract class FileData<T>
       data = fs.readFile(file, new Reader());
     }
     return data.get(id);
+  }
+  
+  public Set<Integer> getIDs()
+  {
+    return Collections.unmodifiableSet(data.keySet());
   }
 }
