@@ -32,13 +32,13 @@ public class TestDataProvider implements IDynamicDataProvider
   @Override
   public Market getDefaultProducedMarket()
   {
-    return new Market(getDefaultSolarSystem(), Market.Order.SELL, BigDecimal.ZERO, getDefaultBrokerFee(), getDefaultTransactionTax());
+    return new Market(getDefaultSolarSystem(), Market.Order.SELL, BigDecimal.ZERO, new BigDecimal("3"), new BigDecimal("2"));
   }
 
   @Override
   public Market getDefaultRequiredMarket()
   {
-    return new Market(getDefaultSolarSystem(), Market.Order.SELL, BigDecimal.ZERO, getDefaultBrokerFee(), getDefaultTransactionTax());
+    return new Market(getDefaultSolarSystem(), Market.Order.SELL, BigDecimal.ZERO, new BigDecimal("3"), new BigDecimal("2"));
   }
 
   @Override
@@ -51,18 +51,6 @@ public class TestDataProvider implements IDynamicDataProvider
   public int getDefaultBlueprintTE(Blueprint bp)
   {
     return 0;
-  }
-
-  @Override
-  public BigDecimal getDefaultBrokerFee()
-  {
-    return new BigDecimal("3");
-  }
-
-  @Override
-  public BigDecimal getDefaultTransactionTax()
-  {
-    return new BigDecimal("2");
   }
 
   @Override

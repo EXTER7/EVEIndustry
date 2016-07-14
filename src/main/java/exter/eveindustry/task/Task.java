@@ -205,7 +205,13 @@ public abstract class Task
       Item i = factory.items.get(tsl_market.getStringAsInt("item", -1));
       if(i != null)
       {
-        setMaterialMarket(i, new Market(tsl_market,factory.dynamic_data));
+        try
+        {
+          setMaterialMarket(i, new Market(tsl_market));
+        } catch(TaskLoadException e)
+        {
+          
+        }
       }
     }
   }

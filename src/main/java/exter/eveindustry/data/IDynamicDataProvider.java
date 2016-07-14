@@ -62,14 +62,4 @@ public interface IDynamicDataProvider
    * Get the default TE for a blueprint.
    */
   public int getDefaultBlueprintTE(Blueprint bp);
-  
-  /**
-   * Get the default broker fee.
-   */
-  public BigDecimal getDefaultBrokerFee();
-
-  /**
-   * Get the default transaction tax.
-   */
-  public BigDecimal getDefaultTransactionTax();
 }

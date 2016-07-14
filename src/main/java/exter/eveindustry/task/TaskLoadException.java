@@ -8,7 +8,7 @@ public final class TaskLoadException extends Exception
 {
   private static final long serialVersionUID = -5878679822079381477L;
   
-  TaskLoadException(String message)
+  public TaskLoadException(String message)
   {
     super(message);
   }

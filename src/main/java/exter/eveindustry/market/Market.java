@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import exter.eveindustry.data.IDynamicDataProvider;
+import exter.eveindustry.task.TaskLoadException;
 import exter.eveindustry.util.Utils;
 import exter.tsl.TSLObject;
 
@@ -144,13 +144,17 @@ public final class Market
     transaction = p.transaction;
   }
 
-  public Market(TSLObject tsl,IDynamicDataProvider provider)
+  public Market(TSLObject tsl) throws TaskLoadException
   {
-    system = tsl.getStringAsInt("system", provider.getDefaultSolarSystem());
+    system = tsl.getStringAsInt("system", -1);
     order = Order.fromInt(tsl.getStringAsInt("order", tsl.getStringAsInt("source", Order.SELL.value)));
     manual = Utils.clamp(tsl.getStringAsBigDecimal("manual", BigDecimal.ZERO),BigDecimal.ZERO,null);
-    broker = Utils.clamp(tsl.getStringAsBigDecimal("broker", provider.getDefaultBrokerFee()),BigDecimal.ZERO,HOUNDRED);
-    transaction = Utils.clamp(tsl.getStringAsBigDecimal("transaction", provider.getDefaultTransactionTax()),BigDecimal.ZERO,HOUNDRED);
+    broker = Utils.clamp(tsl.getStringAsBigDecimal("broker", null),BigDecimal.ZERO,HOUNDRED);
+    transaction = Utils.clamp(tsl.getStringAsBigDecimal("transaction", null),BigDecimal.ZERO,HOUNDRED);
+    if(system < 0 || broker == null || transaction == null)
+    {
+      throw new TaskLoadException("Invalid market.");
+    }
   }
 
   public void writeToTSL(TSLObject tsl)
