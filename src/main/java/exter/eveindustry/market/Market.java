@@ -121,6 +121,18 @@ public final class Market
     this.manual = Utils.clamp(manual,BigDecimal.ZERO,null);
     this.broker = Utils.clamp(broker,BigDecimal.ZERO,HOUNDRED);
     this.transaction = Utils.clamp(transaction,BigDecimal.ZERO,HOUNDRED);
+    if(this.manual == null)
+    {
+      throw new IllegalArgumentException("manual cannot be null");
+    }
+    if(this.broker == null)
+    {
+      throw new IllegalArgumentException("broker cannot be null");
+    }
+    if(this.transaction == null)
+    {
+      throw new IllegalArgumentException("transaction cannot be null");
+    }
   }
 
   public Market(Market p)
@@ -148,5 +160,30 @@ public final class Market
     tsl.putString("manual", manual);
     tsl.putString("broker", broker);
     tsl.putString("transaction", transaction);
+  }
+
+  public Market withSolarSystem(int system)
+  {
+    return new Market(system, this.order, this.manual, this.broker, this.transaction);
+  }
+
+  public Market withOrder(Order order)
+  {
+    return new Market(this.system, order, this.manual, this.broker, this.transaction);
+  }
+
+  public Market withManualPrice(BigDecimal manual)
+  {
+    return new Market(this.system, this.order, manual, this.broker, this.transaction);
+  }
+
+  public Market withBrokerFee(BigDecimal broker)
+  {
+    return new Market(this.system, this.order, this.manual, broker, this.transaction);
+  }
+
+  public Market withTransactionTax(BigDecimal transaction)
+  {
+    return new Market(this.system, this.order, this.manual, this.broker, transaction);
   }
 }
