@@ -123,9 +123,14 @@ public final class ReactionTask extends Task
     return tower;
   }
 
-  public void setStarbaseTower(StarbaseTower value)
+  public void setStarbaseTower(int tower_id)
   {
-    tower = value;
+    StarbaseTower newtower = factory.towers.get(tower_id);
+    if(newtower == null)
+    {
+      return;
+    }
+    tower = newtower;
     updateMaterials();
   }
   
