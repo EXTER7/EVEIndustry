@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import exter.eveindustry.data.blueprint.Blueprint;
 import exter.eveindustry.data.item.Item;
-import exter.eveindustry.data.systemcost.ISolarSystemIndustryCost;
+import exter.eveindustry.data.systemcost.SolarSystemIndustryCost;
 import exter.eveindustry.market.Market;
 
 /**
@@ -27,7 +27,7 @@ public interface IDynamicDataProvider
   /**
    * Get the solar system's industry cost.
    */
-  public ISolarSystemIndustryCost getSolarSystemIndustryCost(int system_id);
+  public SolarSystemIndustryCost getSolarSystemIndustryCost(int system_id);
 
   /**
    * Get the market price for an item.

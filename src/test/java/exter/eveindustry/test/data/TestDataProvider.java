@@ -5,9 +5,8 @@ import java.math.BigDecimal;
 import exter.eveindustry.data.IDynamicDataProvider;
 import exter.eveindustry.data.blueprint.Blueprint;
 import exter.eveindustry.data.item.Item;
-import exter.eveindustry.data.systemcost.ISolarSystemIndustryCost;
+import exter.eveindustry.data.systemcost.SolarSystemIndustryCost;
 import exter.eveindustry.market.Market;
-import exter.eveindustry.test.data.systemcost.TestSystemCost;
 
 public class TestDataProvider implements IDynamicDataProvider
 {
@@ -18,9 +17,9 @@ public class TestDataProvider implements IDynamicDataProvider
   }
 
   @Override
-  public ISolarSystemIndustryCost getSolarSystemIndustryCost(int system_id)
+  public SolarSystemIndustryCost getSolarSystemIndustryCost(int system_id)
   {
-    return new TestSystemCost(system_id);
+    return new SolarSystemIndustryCost(0,0);
   }
 
   @Override

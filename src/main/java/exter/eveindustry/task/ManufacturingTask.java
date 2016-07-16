@@ -12,7 +12,7 @@ import exter.eveindustry.data.blueprint.Blueprint;
 import exter.eveindustry.data.blueprint.InstallationGroup;
 import exter.eveindustry.data.blueprint.InventionInstallation;
 import exter.eveindustry.data.decryptor.Decryptor;
-import exter.eveindustry.data.systemcost.ISolarSystemIndustryCost;
+import exter.eveindustry.data.systemcost.SolarSystemIndustryCost;
 import exter.eveindustry.item.ItemStack;
 import exter.eveindustry.util.Utils;
 import exter.tsl.TSLObject;
@@ -374,7 +374,7 @@ public final class ManufacturingTask extends Task
   public BigDecimal getExtraExpense()
   {
     BigDecimal base_cost = BigDecimal.ZERO;
-    ISolarSystemIndustryCost syscost = factory.dynamic_data.getSolarSystemIndustryCost(system);
+    SolarSystemIndustryCost syscost = factory.dynamic_data.getSolarSystemIndustryCost(system);
     for(ItemStack m:blueprint.materials)
     {
       base_cost = base_cost.add(
@@ -382,12 +382,12 @@ public final class ManufacturingTask extends Task
     }
     BigDecimal jobtax = base_cost.multiply(
         new BigDecimal(
-            (double)(getRuns() * getCopies()) * syscost.getManufacturingCost() * (1.0 + tax / 100)));
+            (double)(getRuns() * getCopies()) * syscost.manufacturing * (1.0 + tax / 100)));
     if(invention != null)
     {
       jobtax = jobtax.add(
           base_cost.multiply(
-              new BigDecimal(invention.installation.cost * invention.attempts * syscost.getInventionCost() * 0.02 * (1.0 + tax / 100))));
+              new BigDecimal(invention.installation.cost * invention.attempts * syscost.invention * 0.02 * (1.0 + tax / 100))));
     }
     return jobtax;
   }
