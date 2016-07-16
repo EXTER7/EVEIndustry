@@ -41,16 +41,16 @@ public final class Reaction
     outputs = Collections.unmodifiableList(matlist);
   }
 
-  public long getMainOutputAmount()
+  public ItemStack getMainOutput()
   {
     for(ItemStack m:outputs)
     {
       if(m.item.id == id)
       {
-        return m.amount;
+        return m;
       }
     }
-    return 0;
+    return null;
   }
   
   static public class Data extends DirectoryData<Reaction>
