@@ -110,9 +110,14 @@ public final class PlanetTask extends Task
     return planet;
   }
 
-  public void setPlanet(Planet value)
+  public void setPlanet(int planet_id)
   {
-    planet = value;
+    Planet newplanet = factory.planets.get(planet_id);
+    if(newplanet == null)
+    {
+      return;
+    }
+    planet = newplanet;
     int i;
     boolean removed = false;
     for(i = buildings.size() - 1; i >= 0; i--)
