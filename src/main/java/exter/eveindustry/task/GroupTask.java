@@ -72,8 +72,9 @@ public final class GroupTask extends Task
   GroupTask(TaskFactory factory,TSLObject tsl) throws TaskLoadException
   {
     super(factory,tsl);
-    tasks.clear();
+    tasks = new HashMap<String,Task>();
     scale = Utils.clamp(tsl.getStringAsInt("scale", 1),1,Integer.MAX_VALUE);
+    listener = new TaskMaterialChangeListener(this);
     List<TSLObject> task_list = tsl.getObjectList("task");
     if(task_list != null)
     {
