@@ -69,6 +69,10 @@ public abstract class FileData<T>
   
   public Set<Integer> getIDs()
   {
+    if(data == null)
+    {
+      data = fs.readFile(file, new Reader());
+    }
     return Collections.unmodifiableSet(data.keySet());
   }
 }

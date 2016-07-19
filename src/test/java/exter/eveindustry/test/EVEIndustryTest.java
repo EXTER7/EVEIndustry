@@ -71,6 +71,7 @@ public class EVEIndustryTest
   @Test
   public void testDecryptorDA()
   {
+    Assert.assertEquals(1, factory.decryptors.getIDs().size());
     Assert.assertNotEquals(null, factory.decryptors.get(34201));
   }
 
@@ -99,6 +100,7 @@ public class EVEIndustryTest
   @Test
   public void testPlanetDA()
   {
+    Assert.assertEquals(1, factory.planets.getIDs().size());
     Assert.assertNotEquals(null, factory.planets.get(2015));
   }
   
