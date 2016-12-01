@@ -76,6 +76,8 @@ class Blueprint:
       if inventory.get_item(bpid).id < 0:
         continue
       bp = Blueprint(bpid,data,inventory)
+      if bp.bpid < 0:
+        continue
       if bp.prodid >= 0:
         result[bp.prodid] = bp
         result[bp.prodid].invention_relics = []
@@ -118,7 +120,11 @@ class Blueprint:
     self.invention = None
     if "manufacturing" in data["activities"]:
       manufacturing = data["activities"]["manufacturing"]
-
+      if not "products" in manufacturing:
+         print("Blurprint has no manufacturing product: %i, %s" % (bpid,inventory.get_item(bpid).name))
+         self.bpid = -1
+         return
+          
       self.prodid = int(manufacturing["products"][0]["typeID"])
       self.amount = int(manufacturing["products"][0]["quantity"])
       prod = inventory.get_item(self.prodid)
