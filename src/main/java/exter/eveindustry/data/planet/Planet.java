@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import exter.eveindustry.data.IdData;
 import exter.eveindustry.data.access.FileData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
 import exter.tsl.TSLObject;
 
-public final class Planet
+public final class Planet extends IdData
 {
   public final List<Item> resources;
   public final String type_name;
-  public final int id;
   public final boolean advanced;
   
   Planet(TSLObject tsl,Item.Data inventory)
   {
-    id = tsl.getStringAsInt("id",-1);
+    super(tsl);
     type_name = tsl.getString("name",null);
     advanced = (tsl.getStringAsInt("advanced",0) != 0);
     
@@ -44,12 +44,6 @@ public final class Planet
     protected Planet createObject(TSLObject tsl)
     {
       return new Planet(tsl,items);
-    }
-
-    @Override
-    protected int getID(Planet obj)
-    {
-      return obj.id;
     }
   }
 }

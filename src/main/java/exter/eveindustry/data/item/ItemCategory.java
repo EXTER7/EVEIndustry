@@ -1,18 +1,18 @@
 package exter.eveindustry.data.item;
 
+import exter.eveindustry.data.IdData;
 import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.tsl.TSLObject;
 
-public final class ItemCategory
+public final class ItemCategory extends IdData
 {
-  public final int id;
   public final String name;
   public final int icon_id;
   
   public ItemCategory(TSLObject tsl)
   {
-    id = tsl.getStringAsInt("id", -1);
+    super(tsl);
     name = tsl.getString("name", null);
     icon_id = tsl.getStringAsInt("icon", -1);
   }

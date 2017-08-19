@@ -1,12 +1,13 @@
 package exter.eveindustry.data.reaction;
 
+import exter.eveindustry.data.IdData;
 import exter.eveindustry.data.access.FileData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
 import exter.eveindustry.item.ItemStack;
 import exter.tsl.TSLObject;
 
-public final class StarbaseTower
+public final class StarbaseTower extends IdData
 {
   public final Item item;
   public final ItemStack fuel;
@@ -14,7 +15,8 @@ public final class StarbaseTower
 
   public StarbaseTower(TSLObject tsl,Item.Data inventory)
   {
-    item = inventory.get(tsl.getStringAsInt("id",-1));
+    super(tsl);
+    item = inventory.get(this.id);
     fuel = new ItemStack(inventory.get(tsl.getStringAsInt("fuel_id",-1)),tsl.getStringAsInt("fuel_amount",-1));
     name = tsl.getString("name",null);
   }
@@ -34,12 +36,5 @@ public final class StarbaseTower
     {
       return new StarbaseTower(tsl,items);
     }
-
-    @Override
-    protected int getID(StarbaseTower obj)
-    {
-      return obj.item.id;
-    }
   }
-
 }

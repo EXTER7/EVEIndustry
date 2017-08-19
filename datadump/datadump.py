@@ -65,9 +65,7 @@ except FileNotFoundError:
 
 mkdir("eid")
 mkdir("eid/blueprint")
-mkdir("eid/blueprint/installation")
-mkdir("eid/blueprint/installation/group")
-mkdir("eid/blueprint/installation/invention")
+mkdir("eid/installation")
 mkdir("eid/refine")
 mkdir("eid/planet")
 mkdir("eid/reaction")
@@ -159,87 +157,85 @@ for i in blueprints:
   if not prod.group in group_list:
     group_list.append(prod.group)
 
+installation_blacklist = [13,145,150,149,36,170,159] # Outposts and other unused installations.
+
 installation_list = {}
-gi_list = []
-installation_blacklist = [13,145,150,149,36,170,159] #Outposts and other unused installations.
-default_installations = {}
-for g in group_list:
-  group_inst = GroupInstallation.get_list(dbc,g)
-  def_gi = -1
-  for gi in group_inst:
-    inst = Installation.get(dbc,gi.installation)
-    # Convert installation names to their proper starbase module name.
-    if inst.activity == 1 and (not "Outpost" in inst.name) and (not "+ " in inst.name) and (not inst.id in installation_blacklist):
-      if inst.name == "STATION manufacturing":
-        inst.name = "Station" 
-      if inst.name == "Booster Manufacturing":
-        inst.name = "Drug Lab" 
-      if inst.name == "Subsystem Manufacturing":
-        inst.name = "Subsystem Assembly Array" 
-      if inst.name == "Capital Ship Assembly":
-        inst.name = "Capital Ship Assembly Array" 
-      installation_list[inst.id] = inst
-      gi.time *= inst.time
-      gi.material *= inst.material
-      gi.cost *= inst.cost
-      gi.group = g
-      gi.id = gi.installation * 23537 + gi.group
-      gi_list.append(gi)
-      if gi.installation == 6 or inst.name == "Subsystem Assembly Array": 
-        default_installations[g] = gi.id
-      if def_gi < 0:
-        def_gi = gi.id
-  if g not in default_installations:
-    default_installations[g] = def_gi
-
-
-inv_installation_list = {}
-for ins in Installation.get_invention_list(dbc):
+for ins in Installation.get_list(dbc):
   # Convert installation names to their proper starbase module name.
-  if (not "Outpost" in ins.name) and (not "+ " in ins.name) and (not ins.id in installation_blacklist):
-    if ins.name == "STATION Invention":
-      ins.name = "Station" 
-    if ins.name == "Mobile Laboratory Invention":
-      ins.name = "Design Lab" 
-    if ins.name == "Ancient Relic Invention":
-      continue
-    ins.relics = False
-    if ins.name == "Experimental Laboratory": 
-      ins.name = "Experimental Lab"
-      ins.relics = True 
+
+  write = False
+  if not ins.id in installation_blacklist:
+    if ins.activity == 1 and (not "Outpost" in ins.name) and (not "+ " in ins.name):
+      if ins.name == "STATION manufacturing":
+        ins.name = "Station" 
+      if ins.name == "Booster Manufacturing":
+        ins.name = "Drug Lab" 
+      if ins.name == "Subsystem Manufacturing":
+        ins.name = "Subsystem Assembly Array" 
+      if ins.name == "Capital Ship Assembly":
+        ins.name = "Capital Ship Assembly Array" 
+      write = True
+    if ins.activity == 8 and (not "Outpost" in ins.name) and (not "+ " in ins.name):
+      if ins.name == "STATION Invention":
+        ins.name = "Station" 
+      if ins.name == "Mobile Laboratory Invention":
+        ins.name = "Design Lab" 
+      if ins.name == "Ancient Relic Invention":
+        continue
+      ins.relics = False
+      if ins.name == "Experimental Laboratory": 
+        ins.name = "Experimental Lab"
+        ins.relics = True 
+      write = True
+  if write:
     print(ins.name + " " + str(ins.time))
-    inv_installation_list[ins.id] = ins
-    
-for gi in gi_list:
-  tslfile = TSLWriter("eid/blueprint/installation/group/%i.tsl" % (gi.id))
-  tslfile.start_collection("insgroup")
-  tslfile.put_value("id",gi.id)
-  tslfile.put_value("group",gi.group)
-  tslfile.put_value("installation",gi.installation)
-  tslfile.put_value("time",gi.time)
-  tslfile.put_value("material",gi.material)
-  tslfile.put_value("cost",gi.cost)
-  tslfile.end_collection()
+    installation_list[ins.id] = ins
 
 for key in installation_list:
   ins = installation_list[key]
-  tslfile = TSLWriter("eid/blueprint/installation/%i.tsl" % (key))
-  tslfile.start_collection("installation")
-  tslfile.put_value("id",key)
-  tslfile.put_value("name",ins.name)
-  tslfile.end_collection()
+  itype = "_"
+  if ins.activity == 1:
+    itype = "manufacturing"
+  elif ins.activity == 8:
+    if ins.relics:
+      itype = "invention.relics"
+    else:
+      itype = "invention"
 
-for key in inv_installation_list:
-  ins = inv_installation_list[key]
-  tslfile = TSLWriter("eid/blueprint/installation/invention/%i.tsl" % (key))
-  tslfile.start_collection("invention")
-  tslfile.put_value("id",key)
-  tslfile.put_value("name",ins.name)
-  tslfile.put_value("time",ins.time)
-  tslfile.put_value("cost",ins.cost)
-  tslfile.put_value("relics",1 if ins.relics else 0)
-  tslfile.end_collection()
+  if itype != "_":
+    tslfile = TSLWriter("eid/installation/%i.tsl" % (key))
+    tslfile.start_collection("installation")
+    tslfile.put_value("id",key)
+    tslfile.put_value("name",ins.name)
+    tslfile.put_value("type",itype)
+    if ins.material != 1.0:
+      tslfile.put_value("material",ins.material)
+    if ins.time != 1.0:
+      tslfile.put_value("time",ins.time)
+    if ins.cost != 1.0:
+      tslfile.put_value("cost",ins.cost)
+    for ci in ins.categories:
+      tslfile.start_collection("category")
+      tslfile.put_value("id",ci.cid)
+      if ci.time != 1.0:
+        tslfile.put_value("time",ci.time)
+      if ci.material != 1.0:
+        tslfile.put_value("material",ci.material)
+      if ci.cost != 1.0:
+        tslfile.put_value("cost",ci.cost)
+      tslfile.end_collection()
 
+    for gi in ins.groups:
+      tslfile.start_collection("group")
+      tslfile.put_value("id",gi.gid)
+      if gi.time != 1.0:
+        tslfile.put_value("time",gi.time)
+      if gi.material != 1.0:
+        tslfile.put_value("material",gi.material)
+      if gi.cost != 1.0:
+        tslfile.put_value("cost",gi.cost)
+      tslfile.end_collection()
+    tslfile.end_collection()
 
 for i in blueprints:
   bp = blueprints[i]
@@ -278,7 +274,6 @@ for i in blueprints:
   tslfile.put_value("id",bp.prodid)
   tslfile.put_value("amount",bp.amount)
   tslfile.put_value("time",bp.time)
-  tslfile.put_value("installation",default_installations[prod.group])
   for mat in bp.materials:
     add_to_inventory_tsl(mat.itemid)
     if mat.amount > 0:
@@ -648,9 +643,6 @@ tslfile.put_value("skill_industry",int(3380))
 tslfile.put_value("skill_advancedindustry",int(3388))
 tslfile.put_value("skill_reprocessing",int(3385))
 tslfile.put_value("skill_reprocessing_efficiency",int(3389))
-tslfile.put_value("inst_default",int(6))
-tslfile.put_value("inv_inst_default",int(38))
-tslfile.put_value("relic_inv_inst_default",int(158))
 tslfile.end_collection()
 
 database.close()

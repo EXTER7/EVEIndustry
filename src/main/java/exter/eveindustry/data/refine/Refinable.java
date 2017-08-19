@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import exter.eveindustry.data.IdData;
 import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
 import exter.eveindustry.item.ItemStack;
 import exter.tsl.TSLObject;
 
-public final class Refinable
+public final class Refinable extends IdData
 {
   public final List<ItemStack> products;
   public final ItemStack item;
@@ -18,10 +19,10 @@ public final class Refinable
 
   Refinable(TSLObject tsl,Item.Data inventory)
   {
-
+    super(tsl);
     ArrayList<ItemStack> prodlist = new ArrayList<ItemStack>();
 
-    item = new ItemStack(inventory.get(tsl.getStringAsInt("id",-1)),tsl.getStringAsInt("batch",-1));
+    item = new ItemStack(inventory.get(this.id),tsl.getStringAsInt("batch",-1));
     skill_id = tsl.getStringAsInt("sid",-1);
     
     List<TSLObject> products_tsl = tsl.getObjectList("product");

@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import exter.eveindustry.data.IdData;
 import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
 import exter.eveindustry.item.ItemStack;
 import exter.tsl.TSLObject;
 
-public final class PlanetBuilding
+public final class PlanetBuilding extends IdData
 {
-
   public final ItemStack product;
   public final int tax;
   public final int level;
@@ -20,8 +20,9 @@ public final class PlanetBuilding
  
   PlanetBuilding(TSLObject tsl, Item.Data inventory)
   {
+    super(tsl);
     ArrayList<ItemStack> matlist = new ArrayList<ItemStack>();
-    product = new ItemStack(inventory.get(tsl.getStringAsInt("id",-1)),tsl.getStringAsInt("amount",-1));
+    product = new ItemStack(inventory.get(this.id),tsl.getStringAsInt("amount",-1));
     level = tsl.getStringAsInt("level",-1);
     tax = tsl.getStringAsInt("tax",-1);
     List<TSLObject> tsl_materials = tsl.getObjectList("in");

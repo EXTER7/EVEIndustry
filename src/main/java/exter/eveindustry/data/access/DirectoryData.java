@@ -3,12 +3,13 @@ package exter.eveindustry.data.access;
 import java.io.IOException;
 import java.io.InputStream;
 
+import exter.eveindustry.data.IdData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.tsl.InvalidTSLException;
 import exter.tsl.TSLObject;
 import exter.tsl.TSLReader;
 
-public abstract class DirectoryData<T>
+public abstract class DirectoryData<T extends IdData>
 {
   private class CacheMiss implements Cache.IMissListener<Integer, T>, IFileSystemHandler.IReadHandler<T>
   {

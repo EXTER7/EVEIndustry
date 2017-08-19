@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import exter.eveindustry.data.IdData;
 import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
 import exter.eveindustry.item.ItemStack;
 import exter.tsl.TSLObject;
 
-public final class Reaction
+public final class Reaction extends IdData
 {
   public final List<ItemStack> inputs;
   public final List<ItemStack> outputs;
-  public final int id;
 
   public Reaction(TSLObject tsl,Item.Data inventory)
   {
-    id = tsl.getStringAsInt("id",-1);
+    super(tsl);
     
     List<ItemStack> matlist = new ArrayList<ItemStack>();
     List<TSLObject> materials_tsl = tsl.getObjectList("in");

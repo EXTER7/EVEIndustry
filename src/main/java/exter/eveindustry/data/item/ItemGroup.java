@@ -1,19 +1,19 @@
 package exter.eveindustry.data.item;
 
+import exter.eveindustry.data.IdData;
 import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.tsl.TSLObject;
 
-public final class ItemGroup
+public final class ItemGroup extends IdData
 {
-  public final int id;
   public final int category_id;
   public final String name;
   public final int icon_id;
   
   public ItemGroup(TSLObject tsl)
   {
-    id = tsl.getStringAsInt("id", -1);
+    super(tsl);
     name = tsl.getString("name", null);
     category_id = tsl.getStringAsInt("cid", -1);
     icon_id = tsl.getStringAsInt("icon", -1);

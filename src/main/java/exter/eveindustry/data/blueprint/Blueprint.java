@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import exter.eveindustry.data.IdData;
 import exter.eveindustry.data.access.DirectoryData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.eveindustry.data.item.Item;
 import exter.eveindustry.item.ItemStack;
 import exter.tsl.TSLObject;
 
-public final class Blueprint
+public final class Blueprint extends IdData
 {
   static final public class Invention
   {
@@ -85,19 +86,18 @@ public final class Blueprint
   public final ItemStack product;
   public final List<ItemStack> materials;
   public final int manufacture_time;
-  public final InstallationGroup installation;
  
   public final Invention invention;
   public final Set<Integer> skills;
   
   
-  Blueprint(TSLObject tsl,Item.Data inventory,InstallationGroup.Data installations)
+  Blueprint(TSLObject tsl,Item.Data inventory)
   {
+    super(tsl);
     List<ItemStack> matlist = new ArrayList<ItemStack>();
 
-    product = new ItemStack(inventory.get(tsl.getStringAsInt("id",-1)),tsl.getStringAsInt("amount",-1));
+    product = new ItemStack(inventory.get(this.id),tsl.getStringAsInt("amount",-1));
     manufacture_time = tsl.getStringAsInt("time",-1);
-    installation = installations.get(tsl.getStringAsInt("installation",-1));
     List<TSLObject> tsl_materials = tsl.getObjectList("material");
 
     for(TSLObject mat_tsl:tsl_materials)
@@ -132,19 +132,17 @@ public final class Blueprint
   static public class Data extends DirectoryData<Blueprint>
   {
     private final Item.Data items;
-    private final InstallationGroup.Data installations;
     
-    public Data(IFileSystemHandler fs,Item.Data items,InstallationGroup.Data installations)
+    public Data(IFileSystemHandler fs,Item.Data items)
     {
       super(fs, "blueprint");
       this.items = items;
-      this.installations = installations;
     }
 
     @Override
     protected Blueprint createObject(TSLObject tsl)
     {
-      return new Blueprint(tsl,items,installations);
+      return new Blueprint(tsl,items);
     }
   }
 

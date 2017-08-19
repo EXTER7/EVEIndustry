@@ -7,12 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import exter.eveindustry.data.IdData;
 import exter.eveindustry.data.filesystem.IFileSystemHandler;
 import exter.tsl.InvalidTSLException;
 import exter.tsl.TSLObject;
 import exter.tsl.TSLReader;
 
-public abstract class FileData<T>
+public abstract class FileData<T extends IdData>
 {
   private class Reader implements IFileSystemHandler.IReadHandler<Map<Integer,T>>
   {
@@ -35,7 +36,7 @@ public abstract class FileData<T>
           if(type == TSLReader.State.OBJECT)
           {
             T obj = createObject(new TSLObject(tsl));
-            map.put(getID(obj), obj);
+            map.put(obj.id, obj);
           }
         }
         return map;
@@ -50,7 +51,6 @@ public abstract class FileData<T>
   private final String file;
 
   protected abstract T createObject(TSLObject tsl);
-  protected abstract int getID(T obj);
 
   public FileData(IFileSystemHandler fs,String file)
   {

@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import exter.eveindustry.data.blueprint.Blueprint;
-import exter.eveindustry.data.blueprint.InstallationGroup;
-import exter.eveindustry.data.blueprint.InventionInstallation;
 import exter.eveindustry.data.decryptor.Decryptor;
 import exter.eveindustry.data.systemcost.SolarSystemIndustryCost;
 import exter.eveindustry.item.ItemStack;
@@ -64,7 +62,6 @@ public final class ManufacturingTask extends Task
   {
     private Decryptor decryptor;
     private int attempts;
-    private InventionInstallation installation;
     private Blueprint.Invention.Relic relic;
     private int invruns;
     
@@ -74,7 +71,6 @@ public final class ManufacturingTask extends Task
       attempts = 5;
       invruns = 1;
       
-      installation = getDefaultInstallation();
       relic = blueprint.invention.default_relic;
     }
        
@@ -85,7 +81,6 @@ public final class ManufacturingTask extends Task
       setDecryptor(tsl.getStringAsInt("decryptor", -1));
       if(blueprint.invention.relics != null)
       {
-        setInstallation(tsl.getStringAsInt("installation", -1));
         relic = blueprint.invention.relics.get(tsl.getStringAsInt("relic",-1));
         if(relic == null)
         {
@@ -93,7 +88,6 @@ public final class ManufacturingTask extends Task
         }
       } else
       {
-        setInstallation(tsl.getStringAsInt("installation", -1));
         relic = null;
       }
     }
@@ -102,7 +96,6 @@ public final class ManufacturingTask extends Task
     {
       tsl.putString("attempts", attempts);
       tsl.putString("decryptor", decryptor == null?-1:decryptor.item.id);
-      tsl.putString("installation", installation.id);
       tsl.putString("runs", invruns);
       if(relic != null)
       {
@@ -200,31 +193,10 @@ public final class ManufacturingTask extends Task
     }
 
 
-    public InventionInstallation getInstallation()
-    {
-      return installation;
-    }
-
-    public void setInstallation(int inv_instalation_id)
-    {
-      installation = factory.invention_installations.get(inv_instalation_id);
-      boolean rel = blueprint.invention.relics != null;
-      if(installation == null || installation.relics != rel)
-      {
-        installation = getDefaultInstallation();
-      }
-    }
-    
-    private InventionInstallation getDefaultInstallation()
-    {
-      return factory.invention_installations.get(
-          blueprint.invention.relics != null?factory.indsutry_data.relic_inv_inst_default:factory.indsutry_data.inv_inst_default);
-    }
-    
     public int getInventionTime()
     {
       int advindustry_skill = skills.get(factory.indsutry_data.skill_industry);
-      return (int) Math.ceil(invruns * blueprint.invention.time * installation.time * (1.0 - 0.03 * advindustry_skill));
+      return (int) Math.ceil(invruns * blueprint.invention.time * (1.0 - 0.03 * advindustry_skill));
     }
     
     public Blueprint.Invention.Relic GetRelic()
@@ -260,7 +232,6 @@ public final class ManufacturingTask extends Task
   
   private Invention invention;
   
-  private InstallationGroup installation;
   private Blueprint blueprint;
   
   private Map<Integer,Integer> skills;
@@ -285,7 +256,6 @@ public final class ManufacturingTask extends Task
     runs = 1;
     copies = 1;
     tax = 10;
-    setDefaultInstallation();
     updateMaterials();
   }
   
@@ -318,11 +288,6 @@ public final class ManufacturingTask extends Task
       me_level = Utils.clamp(tsl.getStringAsInt("me", 0),0,10);
       te_level = Utils.clamp(tsl.getStringAsInt("te", 0),0,20);
     }
-    installation = factory.installation_groups.get(tsl.getStringAsInt("installation", -1));
-    if(installation == null || installation.group_id != blueprint.product.item.group_id)
-    {
-      setDefaultInstallation();
-    }
     system = tsl.getStringAsInt("system", factory.dynamic_data.getDefaultSolarSystem());
     tax = Utils.clamp(tsl.getStringAsFloat("tax", 10),0,100);
     if(hardwiring == null)
@@ -354,7 +319,7 @@ public final class ManufacturingTask extends Task
       return material.scaled(getRuns());
     } else
     {
-      return material.scaledCeil(installation.material * (1.0 - getME() * 0.01) * r);
+      return material.scaledCeil((1.0 - getME() * 0.01) * r);
     }
   }
   
@@ -364,7 +329,7 @@ public final class ManufacturingTask extends Task
     int industry_skill = skills.get(factory.indsutry_data.skill_industry);
     int advindustry_skill = skills.get(factory.indsutry_data.skill_advancedindustry);
 
-    eff_time = (double) blueprint.manufacture_time * installation.time * (1 - (double)getTE() / 100.0) * getRuns();
+    eff_time = (double) blueprint.manufacture_time * (1 - (double)getTE() / 100.0) * getRuns();
     eff_time *= (1.0 - 0.04 * industry_skill) * (1.0 - hardwiring.bonus) * (1.0 - advindustry_skill * 0.03);
 
     return (int)Math.ceil(eff_time);
@@ -387,7 +352,7 @@ public final class ManufacturingTask extends Task
     {
       jobtax = jobtax.add(
           base_cost.multiply(
-              new BigDecimal(invention.installation.cost * invention.attempts * syscost.invention * 0.02 * (1.0 + tax / 100))));
+              new BigDecimal(invention.attempts * syscost.invention * 0.02 * (1.0 + tax / 100))));
     }
     return jobtax;
   }
@@ -438,13 +403,6 @@ public final class ManufacturingTask extends Task
     }
     return produced;
   }
-
-
-  private void setDefaultInstallation()
-  {
-    installation = blueprint.installation;
-  }
-
   
   public Hardwiring getHardwiring()
   {
@@ -520,22 +478,6 @@ public final class ManufacturingTask extends Task
     }
   }
 
-
-  public InstallationGroup getInstallation()
-  {
-    return installation;
-  }
-
-  public void setInstallation(int inst_id)
-  {
-    installation = factory.installation_groups.get(inst_id);
-    if(installation == null || installation.group_id != blueprint.product.item.group_id)
-    {
-      setDefaultInstallation();
-    }
-    updateMaterials();
-  }
-
   @Override
   public void writeToTSL(TSLObject tsl)
   {
@@ -554,7 +496,6 @@ public final class ManufacturingTask extends Task
       invention.writeToTSL(tsl_inv);
       tsl.putObject("invention", tsl_inv);
     }
-    tsl.putString("installation", installation.id);
     tsl.putString("system", system);
     tsl.putString("tax", tax);
     

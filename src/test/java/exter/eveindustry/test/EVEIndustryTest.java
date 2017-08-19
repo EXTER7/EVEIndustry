@@ -61,14 +61,6 @@ public class EVEIndustryTest
   }
 
   @Test
-  public void testInstallationDA()
-  {
-    Assert.assertNotEquals(null, factory.installation_groups.get(141305));
-    Assert.assertNotEquals(null, factory.invention_installations.get(38));
-    Assert.assertNotEquals(null, factory.invention_installations.get(158));
-  }
-
-  @Test
   public void testDecryptorDA()
   {
     Assert.assertEquals(1, factory.decryptors.getIDs().size());
