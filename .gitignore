@@ -10,4 +10,8 @@
 /.classpath
 /.project
 
+/.idea
+/gradle
+
 /EVEIndustry.iml
+
