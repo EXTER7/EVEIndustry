@@ -16,6 +16,7 @@ import sqlite3
 import time
 
 from evedump.item import *
+from evedump.structure import *
 from evedump.blueprint import *
 from evedump.refinable import *
 from evedump.planet import *
@@ -65,7 +66,7 @@ except FileNotFoundError:
 
 mkdir("eid")
 mkdir("eid/blueprint")
-mkdir("eid/installation")
+mkdir("eid/structure")
 mkdir("eid/refine")
 mkdir("eid/planet")
 mkdir("eid/reaction")
@@ -157,85 +158,6 @@ for i in blueprints:
   if not prod.group in group_list:
     group_list.append(prod.group)
 
-installation_blacklist = [13,145,150,149,36,170,159] # Outposts and other unused installations.
-
-installation_list = {}
-for ins in Installation.get_list(dbc):
-  # Convert installation names to their proper starbase module name.
-
-  write = False
-  if not ins.id in installation_blacklist:
-    if ins.activity == 1 and (not "Outpost" in ins.name) and (not "+ " in ins.name):
-      if ins.name == "STATION manufacturing":
-        ins.name = "Station" 
-      if ins.name == "Booster Manufacturing":
-        ins.name = "Drug Lab" 
-      if ins.name == "Subsystem Manufacturing":
-        ins.name = "Subsystem Assembly Array" 
-      if ins.name == "Capital Ship Assembly":
-        ins.name = "Capital Ship Assembly Array" 
-      write = True
-    if ins.activity == 8 and (not "Outpost" in ins.name) and (not "+ " in ins.name):
-      if ins.name == "STATION Invention":
-        ins.name = "Station" 
-      if ins.name == "Mobile Laboratory Invention":
-        ins.name = "Design Lab" 
-      if ins.name == "Ancient Relic Invention":
-        continue
-      ins.relics = False
-      if ins.name == "Experimental Laboratory": 
-        ins.name = "Experimental Lab"
-        ins.relics = True 
-      write = True
-  if write:
-    print(ins.name + " " + str(ins.time))
-    installation_list[ins.id] = ins
-
-for key in installation_list:
-  ins = installation_list[key]
-  itype = "_"
-  if ins.activity == 1:
-    itype = "manufacturing"
-  elif ins.activity == 8:
-    if ins.relics:
-      itype = "invention.relics"
-    else:
-      itype = "invention"
-
-  if itype != "_":
-    tslfile = TSLWriter("eid/installation/%i.tsl" % (key))
-    tslfile.start_collection("installation")
-    tslfile.put_value("id",key)
-    tslfile.put_value("name",ins.name)
-    tslfile.put_value("type",itype)
-    if ins.material != 1.0:
-      tslfile.put_value("material",ins.material)
-    if ins.time != 1.0:
-      tslfile.put_value("time",ins.time)
-    if ins.cost != 1.0:
-      tslfile.put_value("cost",ins.cost)
-    for ci in ins.categories:
-      tslfile.start_collection("category")
-      tslfile.put_value("id",ci.cid)
-      if ci.time != 1.0:
-        tslfile.put_value("time",ci.time)
-      if ci.material != 1.0:
-        tslfile.put_value("material",ci.material)
-      if ci.cost != 1.0:
-        tslfile.put_value("cost",ci.cost)
-      tslfile.end_collection()
-
-    for gi in ins.groups:
-      tslfile.start_collection("group")
-      tslfile.put_value("id",gi.gid)
-      if gi.time != 1.0:
-        tslfile.put_value("time",gi.time)
-      if gi.material != 1.0:
-        tslfile.put_value("material",gi.material)
-      if gi.cost != 1.0:
-        tslfile.put_value("cost",gi.cost)
-      tslfile.end_collection()
-    tslfile.end_collection()
 
 for i in blueprints:
   bp = blueprints[i]
@@ -346,7 +268,25 @@ for d in decr:
   tslfile.pop_formatter()
 tslfile.end_collection()
   
+decr = Decryptor.get_list(dbc)
 
+
+print("Converting Structures")
+
+for structure in Structure.get_list(dbc):
+  add_to_inventory_tsl(structure.id)
+
+  tslfile = TSLWriter("eid/structure/%i.tsl" % (structure.id))
+  tslfile.start_collection("structure")
+  tslfile.put_value("id",structure.id)
+  tslfile.put_value("material",structure.material)
+  tslfile.put_value("time",structure.time)
+  tslfile.put_value("cost",structure.cost)
+  tslfile.put_value("service_slots",structure.service_slots)
+  tslfile.put_value("rig_slots",structure.rig_slots)
+  tslfile.put_value("rig_size",structure.rig_size)
+  tslfile.end_collection()
+  
 
 print("Converting Refinables")
 ref_list = Index()

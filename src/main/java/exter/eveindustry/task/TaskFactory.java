@@ -20,6 +20,7 @@ import exter.eveindustry.data.reaction.StarbaseTower;
 import exter.eveindustry.data.refine.Refinable;
 import exter.eveindustry.data.starmap.Region;
 import exter.eveindustry.data.starmap.SolarSystem;
+import exter.eveindustry.data.structure.Structure;
 import exter.tsl.TSLObject;
 
 /**
@@ -41,6 +42,7 @@ public final class TaskFactory
   public final StarbaseTower.Data towers;
   public final SolarSystem.Data solarsystems;
   public final Region.Data regions;
+  public final Structure.Data structures;
   public final IndustryData indsutry_data;
   public final IDynamicDataProvider dynamic_data;
   
@@ -64,6 +66,7 @@ public final class TaskFactory
     towers = new StarbaseTower.Data(fs,items);
     solarsystems = new SolarSystem.Data(fs);
     regions = new Region.Data(fs);
+    structures = new Structure.Data(fs);
     indsutry_data = fs.readFile("eid.tsl", new IndustryData.Reader());
     this.dynamic_data = dynamic_data;
   }
