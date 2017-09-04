@@ -5,6 +5,8 @@ def deunicode(str):
    str = str.replace(u"\u2013"," - ")
    str = str.replace(u"\u201c",'"')
    str = str.replace(u"\u201d",'"')
+   str = str.replace(u"\xa0",' ')
+
    return str
 
 

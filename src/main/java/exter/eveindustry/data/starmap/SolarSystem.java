@@ -9,12 +9,14 @@ public final class SolarSystem extends IdData
 {
   public final String name;
   public final int region;
+  public final double sec_status;
   
   SolarSystem(TSLObject tsl)
   {
     super(tsl);
     name = tsl.getString("name", null);
     region = tsl.getStringAsInt("region", -1);
+    sec_status = tsl.getStringAsDouble("sec_status", -1);
   }
   
   static public class Data extends DirectoryData<SolarSystem>

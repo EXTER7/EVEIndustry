@@ -67,6 +67,7 @@ except FileNotFoundError:
 mkdir("eid")
 mkdir("eid/blueprint")
 mkdir("eid/structure")
+mkdir("eid/structure/rig")
 mkdir("eid/refine")
 mkdir("eid/planet")
 mkdir("eid/reaction")
@@ -268,9 +269,6 @@ for d in decr:
   tslfile.pop_formatter()
 tslfile.end_collection()
   
-decr = Decryptor.get_list(dbc)
-
-
 print("Converting Structures")
 
 for structure in Structure.get_list(dbc):
@@ -287,6 +285,24 @@ for structure in Structure.get_list(dbc):
   tslfile.put_value("rig_size",structure.rig_size)
   tslfile.end_collection()
   
+for rig in StructureRig.get_list(dbc):
+  add_to_inventory_tsl(rig.id)
+
+  tslfile = TSLWriter("eid/structure/rig/%i.tsl" % (rig.id))
+  tslfile.start_collection("rig")
+  tslfile.put_value("id",rig.id)
+  tslfile.put_value("material",rig.material)
+  tslfile.put_value("time",rig.time)
+  tslfile.put_value("cost",rig.cost)
+  tslfile.put_value("rig_size",rig.rig_size)
+  tslfile.put_value("highsec_bonus",rig.highsec_bonus)
+  tslfile.put_value("lowsec_bonus",rig.lowsec_bonus)
+  tslfile.put_value("nullsec_bonus",rig.nullsec_bonus)
+
+  for group in rig.fit_groups:
+    if group >= 0:
+      tslfile.put_value("fit_group",group)
+  tslfile.end_collection()
 
 print("Converting Refinables")
 ref_list = Index()
@@ -481,6 +497,7 @@ for ss in systems:
     tslfile.put_value("id",ss.id)
     tslfile.put_value("name",ss.name)
     tslfile.put_value("region",int(ssrid))
+    tslfile.put_value("sec_status",ss.sec_status)
     tslfile.end_collection()
 
 for s in skills:
